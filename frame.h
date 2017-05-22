@@ -6,7 +6,7 @@
 #include "mydiscretedynamicsworld.h"
 #include "utils.h"
 
-struct NullShoxSetup
+struct NullShoxAdapter
 {
     template<class FrontPart, class RearPart>
     void setupPoint(FrontPart* f, RearPart* r){}
@@ -14,7 +14,7 @@ struct NullShoxSetup
     void remove(){}
 };
 
-struct NullLinkerSetup
+struct NullLinkerAdapter
 {
     template<class FrontPart, class RearPart>
     void setupPoint(FrontPart* f, RearPart* r){}
@@ -22,7 +22,7 @@ struct NullLinkerSetup
     void remove(){}
 };
 
-template<class FrontPart, class RearPart, class LinkerSetup=NullLinkerSetup, class ShoxSetup=NullShoxSetup>
+template<class FrontPart, class RearPart, class LinkerAdapter=NullLinkerAdapter, class ShoxAdapter=NullShoxAdapter>
 class Frame
 {
 public:
@@ -45,15 +45,19 @@ public:
             delete _rear;        
     }
 
-    void create(MyDiscreteDynamicsWorld* world, const front_param_t& fp, const rear_param_t& rp, LinkerSetup* lsetup=nullptr, ShoxSetup* ssetup=nullptr)
+    void create(MyDiscreteDynamicsWorld* world
+                , const front_param_t& fp
+                , const rear_param_t& rp
+                , LinkerAdapter* ladpt=nullptr
+                , ShoxAdapter* sadpt=nullptr)
     {
         _front = new FrameFrontPart(_origin, fp);
         _rear = new FrameSteadyRearPart(PositionInfo(0,0,0), rp);
-        if(lsetup != nullptr)
-            lsetup->setupPoint(_front, _rear);
+        if(ladpt != nullptr)
+            ladpt->setupPoint(_front, _rear);
 
-        if( ssetup != nullptr)
-            ssetup->setupPoint(_front, _rear);
+        if( sadpt != nullptr)
+            sadpt->setupPoint(_front, _rear);
 
         _front->create();
         //_front->physics_body()->setAngularVelocity(btVector3(0.f, 100.f, 0.f));
@@ -68,11 +72,11 @@ public:
         _rear->create();
         _rear->attach2World(world);
 
-        if(lsetup != nullptr)
-            lsetup->setupLinker(world, _front, _rear);
+        if(ladpt != nullptr)
+            ladpt->setupLinker(world, _front, _rear);
 
-        if(ssetup != nullptr)
-            ssetup->setupShox(world, _front, _rear);
+        if(sadpt != nullptr)
+            sadpt->setupShox(world, _front, _rear);
     }
 
     //Head tube world postion

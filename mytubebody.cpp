@@ -64,7 +64,7 @@ MyTubeBody::MyTubeBody(real_t out_radius_top, real_t in_radius_top
         real_t x = (_inr_b+(_outr_b-_inr_b)/2.f) * cos( 2*MY_PI/slices * i);
         real_t y = 0.f;
         real_t z = (_inr_b+(_outr_b-_inr_b)/2.f) * sin( 2*MY_PI/slices * i);
-        reaL_t yaw = MY_PI/2.f - 2*MY_PI/slices * i;
+        real_t yaw = MY_PI/2.f - 2*MY_PI/slices * i;
         addBody(h, origin, mass/slices);
     }
 }

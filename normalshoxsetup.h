@@ -9,10 +9,10 @@
 template<class FrontPoint , class RearPoint
          ,class Shox
 >
-class NormalShoxSetup
+class NormalShoxAdapter
 {
 public:
-    NormalShoxSetup(Shox* shox)
+    NormalShoxAdapter(Shox* shox)
         :_shox(std::auto_ptr<Shox>(shox))
     {
         _fpoint = std::auto_ptr<FrontPoint>(new FrontPoint());

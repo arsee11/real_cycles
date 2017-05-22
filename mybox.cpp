@@ -28,8 +28,8 @@ void MyBox::render(const BodyTransInfo& i)
     glPushMatrix();
     glTranslatef(i.x/FACTOR, i.y/FACTOR, i.z/FACTOR);
     glRotatef(i.degrees(), i.axis_x, i.axis_y, i.axis_z);
-    //_cube.draw();
-    glColor3f(_color.r/255.f, _color.g/255.f, _color.b/255.f );
+    _cube.draw();
+    /*glColor3f(_color.r/255.f, _color.g/255.f, _color.b/255.f );
     static int indices[36] = {
         0,1,2,
         3,2,1,
@@ -69,7 +69,7 @@ void MyBox::render(const BodyTransInfo& i)
         glVertex3f (v1.x(), v1.y(), v1.z());
         glVertex3f (v2.x(), v2.y(), v2.z());
         glVertex3f (v3.x(), v3.y(), v3.z());
-    }
+    }*/
     glEnd();
     glPopMatrix();
 

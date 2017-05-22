@@ -9,10 +9,10 @@ template<class FrontPoint1, class FrontPoint2
          , class RearPoint1, class RearPoint2
          , class Linker1, class Linker2
 >
-class TwoLinkerSetup
+class TwoLinkerAdapter
 {
 public:
-    TwoLinkerSetup(real_t len1, real_t len2)
+    TwoLinkerAdapter(real_t len1, real_t len2)
         :_len1(len1)
         ,_len2(len2)
     {}
