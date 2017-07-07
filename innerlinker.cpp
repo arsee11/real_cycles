@@ -26,29 +26,6 @@ InnerLinker::InnerLinker(const PositionInfo &origin, real_t mass, real_t len, re
     this->createSelf();
 }
 
-void InnerLinker::makeLeftLink(MyDiscreteDynamicsWorld *world, MyPhysicsBody *body, const PositionInfo &body_point)
-{
-    PositionInfo anchor1( -(_len/2.f-1.f), 0, _left_width/2.f );
-    PositionInfo body_point1 = body_point;
-    makeLink(world, anchor1, body, body_point1);
-
-    PositionInfo anchor2( -(_len/2.f-1.f), 0, -_left_width/2.f );
-    PositionInfo body_point2(body_point.x, body_point.y, -body_point.z);
-    makeLink(world, anchor2, body, body_point2);
-}
-
-void InnerLinker::makeRightLink(MyDiscreteDynamicsWorld *world, MyPhysicsBody *body, const PositionInfo &body_point)
-{
-    PositionInfo anchor1( _len/2.f-1.f, 0, _right_width/2.f );
-    PositionInfo body_point1 = body_point;
-    makeLink(world, anchor1, body, body_point1);
-
-    PositionInfo anchor2( _len/2.f-1.f, 0, -_right_width/2.f );
-    PositionInfo body_point2(body_point.x, body_point.y, -body_point.z);
-    makeLink(world, anchor2, body, body_point2);
-}
-
-
 void InnerLinker::calcCube()
 {
     _cube.height(2.f);

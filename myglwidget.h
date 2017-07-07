@@ -12,6 +12,7 @@ class MyGLWidget : public QOpenGLWidget
     Q_OBJECT
 public:
     MyGLWidget(){
+        this->showMaximized();
     }
 
     void onWorldStateChanged(const bodies_state_t &states);

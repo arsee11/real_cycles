@@ -2,6 +2,7 @@
 #include "mydiscretedynamicsworld.h"
 #include <QGL>
 #include <QDebug>
+#include <GL/gl.h>
 
 MyBox::MyBox(real_t l, real_t w, real_t h, const PositionInfo& origin, btScalar mass)
      :MyPhysicsBody(origin)

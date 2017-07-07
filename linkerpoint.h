@@ -33,9 +33,7 @@ public:
     virtual Param getParam()=0;
 
 protected:
-    PositionInfo _link_pos_out;
-    MyBox* _linker_out=nullptr;
-    MyBox* _linker_in=nullptr;
+    PositionInfo _link_pos;
 };
 
 class FrontBBPoint:public LinkerPoint
@@ -44,12 +42,8 @@ public:
     template< class FrontPart>
     PositionInfo setup(FrontPart* p){
         Param pr = getParam();
-        std::tie(_link_pos_out, _linker_out, _linker_in)
-                = p->setupLinkPoint(pr.x, pr.y, pr.width, FrontPart::BASE_BB, pr.is_in);
-
-        PositionInfo pos = _link_pos_out;
-        pos.z = pr.width/2;
-        return pos;
+        _link_pos  = p->setupLinkPoint(pr.x, pr.y, FrontPart::BASE_BB);
+        return _link_pos;
    }
 };
 
@@ -59,12 +53,8 @@ public:
     template< class FrontPart>
     PositionInfo setup(FrontPart* p){
         Param pr = getParam();
-        std::tie(_link_pos_out, _linker_out, _linker_in)
-                = p->setupLinkPoint(pr.x, pr.y, pr.width, FrontPart::BASE_SEAT, pr.is_in);
-
-        PositionInfo pos = _link_pos_out;
-        pos.z = pr.width/2;
-        return pos;
+         _link_pos  = p->setupLinkPoint(pr.x, pr.y, FrontPart::BASE_SEAT);
+        return _link_pos;
    }
 };
 
@@ -74,12 +64,8 @@ public:
     template< class FrontPart>
     PositionInfo setup(FrontPart* p){
         Param pr = getParam();
-        std::tie(_link_pos_out, _linker_out, _linker_in)
-                = p->setupLinkPoint(pr.x, pr.y, pr.width, FrontPart::BASE_BOTTOM, pr.is_in);
-
-        PositionInfo pos = _link_pos_out;
-        pos.z = pr.width/2;
-        return pos;
+         _link_pos = p->setupLinkPoint(pr.x, pr.y, FrontPart::BASE_BOTTOM);
+        return _link_pos;
    }
 };
 
@@ -89,13 +75,9 @@ public:
     template< class RearPart>
     PositionInfo setup(RearPart* p){
         Param pr = getParam();
-         pr.width = p->tyre_width();
-        std::tie(_link_pos_out, _linker_out, _linker_in)
-                = p->setupLinkPoint(pr.x, pr.y, pr.width, RearPart::BASE_BOTTOM, pr.is_in);
-
-        PositionInfo pos = _link_pos_out;
-        pos.z = pr.width/2;
-        return pos;
+        pr.width = p->tyre_width();
+        _link_pos = p->setupLinkPoint(pr.x, pr.y, RearPart::BASE_BOTTOM);
+        return _link_pos;
    }
 };
 
@@ -106,12 +88,8 @@ public:
     PositionInfo setup(RearPart* p){
         Param pr = getParam();
         pr.width = p->tyre_width();
-        std::tie(_link_pos_out, _linker_out, _linker_in)
-                = p->setupLinkPoint(pr.x, pr.y, pr.width, RearPart::BASE_TOP, pr.is_in);
-
-        PositionInfo pos = _link_pos_out;
-        pos.z = pr.width/2.f;
-        return pos;
+        _link_pos = p->setupLinkPoint(pr.x, pr.y, RearPart::BASE_TOP);
+        return _link_pos;
    }
 };
 
@@ -121,14 +99,13 @@ public:
     template< class RearPart>
     PositionInfo setup(RearPart* p){
         Param pr = getParam();
-        std::tie(_link_pos_out, _linker_out, _linker_in)
-                = p->setupLinkPoint(pr.x+1, pr.y, pr.width, RearPart::BASE_TOP_EXTEN, pr.is_in);
+         _link_pos  = p->setupLinkPoint(pr.x+1, pr.y, RearPart::BASE_TOP_EXTEN);
 
-        PositionInfo pos(_link_pos_out.x + cos(_link_pos_out.roll)*(pr.x/2.f)-1.f
-                         ,_link_pos_out.y + sin(_link_pos_out.roll)*(pr.x/2.f)
+        PositionInfo pos(_link_pos.x + cos(_link_pos.roll)*(pr.x/2.f)-1.f
+                         ,_link_pos.y + sin(_link_pos.roll)*(pr.x/2.f)
                          ,pr.width/2.f
-                         ,0.f, 0.f, _link_pos_out.roll);
-        return pos;
+                         ,0.f, 0.f, _link_pos.roll);
+        return _link_pos;
    }
 };
 

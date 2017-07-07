@@ -30,3 +30,13 @@ ForkUpper::ForkUpper(real_t mass, real_t  travel, real_t width, real_t steer_len
     addBody(cmass,_streer, 0.f, _y/2.f-steer_len/2.f, 0.f);
 }
 
+PositionInfo ForkUpper::getCrownOrigin()
+{
+    PositionInfo o = this->origin();
+    PositionInfo co = _crown->origin();
+    co.yaw = o.yaw;
+    co.pitch = o.pitch;
+    co.roll = o.roll;
+    return co;
+}
+

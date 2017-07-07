@@ -20,6 +20,12 @@ struct Vex
         :x(ix),y(iy),z(iz)
     {}
 
+    Vex(real_t ix, real_t iy)
+        :x(ix),y(iy),z(0)
+    {}
+
+    real_t distance(const Vex& another)const;
+
     real_t x=0, y=0, z=0;
 };
 
@@ -61,9 +67,22 @@ real_t constexpr MY_PI = 3.141592653;
 
 inline real_t todegrees(real_t rads){ return rads/MY_PI *180.0;}
 inline real_t torads(int degrees){ return degrees/180.0 * MY_PI; }
+inline real_t absf(real_t n){
+    if(n>0.f)
+        return n;
 
-class MyCylinder;
+    if( n < 0.f )
+        return -n;
 
-std::tuple<PositionInfo, MyCylinder*> createTube(real_t x0, real_t y0, real_t x1, real_t y1, real_t left_radius, real_t right_radius);
+    return 0.f;
+}
+
+//已知点(x1, y1)， 到直线 y2 = kx2+b 上的点(x2, y2)的距离 n， 求（x2, y2)。
+//将方程组 ((x2-x1)^2+(y2-y1)^2)^0.5=n^2
+//               y2=kx2+b
+// 化成 一元二次方程：ax2^2 + bx2+c=0
+// 求解：(-b±(b^2-4ac)^0.5)/2a
+//@return (x2, y2) and (x2', y2')
+std::tuple<real_t, real_t, real_t, real_t> calcPoint_x2y2(real_t x1, real_t y1, real_t k, real_t b, real_t n);
 
 #endif // UTILS_H

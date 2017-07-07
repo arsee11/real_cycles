@@ -2,14 +2,15 @@
 #include "mycylinder.h"
 #include "mydiscretedynamicsworld.h"
 #include "shox.h"
+#include "configer.h"
 
-HalfShoxPart::HalfShoxPart(const PositionInfo &origin, real_t mass, real_t radius, real_t len, real_t setup_width, bool is_left)
+HalfShoxPart::HalfShoxPart(const PositionInfo &origin, real_t mass, real_t radius, real_t len)
     :MyCompoundBody(origin, mass)
-    ,_setup_width(setup_width)
+    ,_len(len)
 {
-    MyCylinder *c = new MyCylinder(radius, len-1, radius, MyCylinder::X);
+    MyCylinder *c = new MyCylinder(radius, len, radius, MyCylinder::X);
     real_t bw = 1.f;
-    MyBox* b = new MyBox(2.f, bw, 2.f);
+    /*MyBox* b = new MyBox(2.f, bw, 2.f);
 
     real_t xc;
     real_t xb;
@@ -27,11 +28,12 @@ HalfShoxPart::HalfShoxPart(const PositionInfo &origin, real_t mass, real_t radiu
       c->color(150, 150, 150);
       b->color(150, 150, 150);
     }
+    */
 
-    addBody(mass-0.01f, c, xc, 0.f, 0.f, origin.yaw, origin.pitch, origin.roll);
-    addBody(0.01f, b, xb, 0.f, 0.f , origin.yaw, origin.pitch, origin.roll);
+    addBody(mass, c, 0, 0.f, 0.f, origin.yaw, origin.pitch, origin.roll);
+    //addBody(0.01f, b, xb, 0.f, 0.f , origin.yaw, origin.pitch, origin.roll);
 
-    real_t l = (_setup_width - bw)/2.f;
+    /*real_t l = (_setup_width - bw)/2.f;
     //out
     MyCylinder * setup_p = new MyCylinder(0.5f, l, 0.5f, MyCylinder::Z);
     real_t xs = xb;
@@ -47,7 +49,7 @@ HalfShoxPart::HalfShoxPart(const PositionInfo &origin, real_t mass, real_t radiu
     _setup_pos_in.x = xs;
     _setup_pos_in.y = 0;
     _setup_pos_in.z = -_setup_width/2.f;
-
+    */
     createSelf();
 }
 
@@ -57,8 +59,8 @@ Shox::Shox(const PositionInfo &origin, real_t mass, real_t len, real_t travel)
     ,_mass(mass)
     ,_travel(travel)
 {
-    _right_len = (_len-_travel-4)+1.f;
-    _left_len = (_travel+4.f)+1.f;
+    _right_len = (_len-_travel-4);
+    _left_len = (_travel+4.f);
     createLeftPart();
     createRightPart();
     makeLink();
@@ -75,13 +77,17 @@ void Shox::attach2World(MyDiscreteDynamicsWorld *world){
        world->theWorld()->addConstraint(_link, true);
 }
 
-void Shox::origin(const PositionInfo &o)
+void Shox::moveTo(const PositionInfo &o)
 {
     _origin = o;
-    PositionInfo lo( _origin.x-(_len-_left_len)/2.f, _origin.y, _origin.z, _origin.yaw, _origin.pitch, _origin.roll);
+    real_t lx = _origin.x - (_len-_left_len)/2.f*cos(_origin.roll);
+    real_t ly = _origin.y - (_len-_left_len)/2.f*sin(_origin.roll);
+    PositionInfo lo( lx, ly, _origin.z, _origin.yaw, _origin.pitch, _origin.roll);
     _left->origin(lo);
 
-    PositionInfo ro( _origin.x +(_len-_right_len)/2.f, _origin.y, _origin.z, _origin.yaw, _origin.pitch, _origin.roll);
+    real_t rx = _origin.x + (_len-_right_len)/2.f*cos(_origin.roll);
+    real_t ry = _origin.y + (_len-_right_len)/2.f*sin(_origin.roll);
+    PositionInfo ro( rx, ry, _origin.z, _origin.yaw, _origin.pitch, _origin.roll);
     _right->origin(ro);
 }
 
@@ -89,7 +95,7 @@ void Shox::createLeftPart()
 {
     real_t m = _mass *(LEFT_MASS_FACTOR/(LEFT_MASS_FACTOR+RIGHT_MASS_FACTOR));
     PositionInfo origin( _origin.x-(_len-_left_len)/2.f, _origin.y, _origin.z);
-    _left = new HalfShoxPart(origin, m, 1.5f, _left_len, setupWidth() );
+    _left = new HalfShoxPart(origin, m, 1.5f, _left_len );
     //_left->physics_body()->setAngularVelocity(btVector3(0, 100, 10));
     _left->color(255, 100, 0);
 }
@@ -98,7 +104,7 @@ void Shox::createRightPart()
 {
     real_t m = _mass *(RIGHT_MASS_FACTOR/(LEFT_MASS_FACTOR+RIGHT_MASS_FACTOR));
     PositionInfo origin( _origin.x +(_len-_right_len)/2.f, _origin.y, _origin.z);
-    _right = new HalfShoxPart(origin, m, 2.5f, _right_len, setupWidth(), false);
+    _right = new HalfShoxPart(origin, m, 2.5f, _right_len);
     //_right->physics_body()->applyCentralImpulse(btVector3(-100, 0,0));
     _right->color(100,100,100);
 }
@@ -115,6 +121,7 @@ void Shox::makeLink()
                 *(_left->physics_body()), *(_right->physics_body()), localA, localB);
 
     //_link->setBreakingImpulseThreshold(100000000.f);
+    _link->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
     _link->setLimit(0, -_travel, 0);
     _link->setLimit(1, 0, 0);
     _link->setLimit(2, 0, 0);
@@ -122,8 +129,8 @@ void Shox::makeLink()
     _link->setLimit(4, 0, 0);
     _link->setLimit(5, 0, 0);
     _link->enableSpring(0, true);
-    _link->setStiffness(0, 450);
-    _link->setDamping(0, 10);
+    _link->setStiffness(0, 600);
+    _link->setDamping(0, 300);
     _link->setEquilibriumPoint();
 
     //_link = new btFixedConstraint(*(_left->physics_body()), *(_right->physics_body()), localA, localB);
@@ -132,38 +139,17 @@ void Shox::makeLink()
 
 void Shox::setup(MyDiscreteDynamicsWorld *world
                  , HalfShoxPart *part, const PositionInfo &part_point
-                 , MyPhysicsBody *body_out, const PositionInfo &point_out
-                 , MyPhysicsBody *body_in, const PositionInfo &point_in)
+                 , MyPhysicsBody *body, const PositionInfo &body_point)
 {
-    {
-        btTransform localA, localB;
-        localA.setIdentity();
-        localA.setOrigin( btVector3(part_point.x, part_point.y, part_point.z) );
-        localB.setIdentity();
-        localB.setOrigin(btVector3(point_out.x, point_out.y, point_out.z));
-        btGeneric6DofConstraint* c1 =  new btGeneric6DofConstraint(
-                    *(part->physics_body()), *(body_out->physics_body()), localA, localB, false);
 
-        c1->setLimit(0,0,0);
-        c1->setLimit(1,0,0);
-        c1->setLimit(2,0,0);
-        c1->setLimit(3,0,0);
-        c1->setLimit(4,0,0);
-        c1->setLimit(5, 1, -1);
-        world->theWorld()->addConstraint(c1);
+    btVector3 axis_this(0.f, 0.f, 1.f);
+    btVector3 axis_body(0.f, 0.f, 1.f);
+    btVector3 pivot_this(part_point.x, part_point.y, part_point.z);
+    btVector3 pivot_body( body_point.x, body_point.y, body_point.z );
+    btHingeConstraint*  hinge = new btHingeConstraint(*(part->physics_body()), *(body->physics_body())
+                                                  , pivot_this, pivot_body, axis_this, axis_body);
 
+    hinge->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+    world->theWorld()->addConstraint(hinge);
 
-        btScalar z  = part_point.z;
-        btVector3 part_point1(part_point.x, part_point.y, -z);
-        localA.setIdentity();
-        localA.setOrigin( part_point1 );
-        localB.setIdentity();
-        localB.setOrigin(btVector3(point_in.x, point_in.y, point_in.z));
-        btGeneric6DofConstraint* c2 =  new btGeneric6DofConstraint(
-                    *(part->physics_body()), *(body_in->physics_body()), localA, localB, false);
-
-        c2->setLimit(5, 1, -1);
-        world->theWorld()->addConstraint(c2);
-
-    }
 }

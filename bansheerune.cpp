@@ -2,9 +2,9 @@
 
 namespace banshee_rune {
 
-RearBottomLinkerPoint::Param FrontBottomLinkerPoint::getParam()
+FrontBottomLinkerPoint::Param FrontBottomLinkerPoint::getParam()
 {
-    return Param(4.f, 3.f, 4.f);
+    return Param(0.f, 3.f, 4.f);
 }
 
 FrontUpLinkerPoint::Param FrontUpLinkerPoint::getParam()
@@ -14,12 +14,12 @@ FrontUpLinkerPoint::Param FrontUpLinkerPoint::getParam()
 
 RearBottomLinkerPoint::Param RearBottomLinkerPoint::getParam()
 {
-    return Param(0.f, 4.f, 0.f);
+    return Param(-1.f, 0.f, 4.f);
 }
 
 RearUpLinkerPoint::Param RearUpLinkerPoint::getParam()
 {
-    return Param(0.f, 5.f, 0.f);
+    return Param(-1.f, 5.f, 4.f);
 }
 
 FrontShoxPoint::Param FrontShoxPoint::getParam()

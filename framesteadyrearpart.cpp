@@ -1,5 +1,4 @@
 #include "framesteadyrearpart.h"
-#include "mybox.h"
 #include "shox.h"
 
 FrameSteadyRearPart::FrameSteadyRearPart(const PositionInfo& origin, real_t mass, real_t bl, real_t ll, real_t rl, real_t axis, real_t tyre_width)
@@ -16,17 +15,17 @@ FrameSteadyRearPart::FrameSteadyRearPart(const PositionInfo& origin, real_t mass
     createRight();  
 }
 
-std::tuple<PositionInfo, MyBox*, MyBox*>
-FrameSteadyRearPart::setupLinkPoint(real_t x, real_t y, real_t width, PointBase base, bool is_in)
+PositionInfo FrameSteadyRearPart::setupLinkPoint(real_t x, real_t y, PointBase base)
 {
     real_t x0, y0;
-    real_t z0 =  is_in ? width/2.f+0.5f : width/2.f;
+    real_t z0 = 0.f;
+    real_t roll = this->origin().roll;
     if(base == BASE_TOP)
     {
         PositionInfo o = _lt_out->origin();
         x0 = o.x + _ll/2.f*cos(o.roll);
         y0 = o.y + _ll/2.f*sin(o.roll);
-        return setupLinkPoint_i(x, -y, PositionInfo(x0, y0,z0), is_in);
+        return PositionInfo(x0+x, y0-y, z0,  0, 0, roll);
     }
 
     if( base == BASE_BOTTOM)
@@ -34,7 +33,7 @@ FrameSteadyRearPart::setupLinkPoint(real_t x, real_t y, real_t width, PointBase 
         PositionInfo o = _bt_out->origin();
         x0 = o.x + _bl/2.f*cos(o.roll);
         y0 = o.y;
-        return setupLinkPoint_i(x, y, PositionInfo(x0, y0,z0), is_in);
+        return PositionInfo(x0+x, y0+y, z0,  0, 0, roll);
     }
 
     if(base == BASE_TOP_EXTEN)
@@ -42,16 +41,25 @@ FrameSteadyRearPart::setupLinkPoint(real_t x, real_t y, real_t width, PointBase 
         PositionInfo o = _lt_out->origin();
          x0 = o.x + _ll/2.f*cos(o.roll);
          y0 = o.y + _ll/2.f*sin(o.roll);;
+         /*real_t z = o.z - (_ll/2.f+x)*sin(o.yaw);
+         PositionInfo link_pos_out(x0+x/2*cos(o.roll), y0+y/2*sin(o.roll), z, o.yaw,o.pitch, o.roll);
+         MyBox* linker_out = new MyBox(x, 1.f, 3.f);
+         this->addBody(linker_out, link_pos_out, 0.05f );
+         PositionInfo link_pos_in(link_pos_out.x, link_pos_out.y, -z, o.yaw,o.pitch, o.roll);
+         MyBox* linker_in = new MyBox(x, 1.f, 3.f);
+         this->addBody(linker_in, link_pos_in, 0.05f );
+         */
          y = x*sin(o.roll);
          x = x*cos(o.roll);
-         return setupLinkPoint_i(x, y, PositionInfo(x0, y0,z0, 0, 0, o.roll), is_in);
+         return PositionInfo(x0+x, y0+y, z0,  0, 0, roll);
     }
-    return std::make_tuple(PositionInfo(), nullptr, nullptr);
+    return PositionInfo();
 }
 
-///@return link out pos, link in pos, out linker, in linker
-std::tuple<PositionInfo, MyBox*, MyBox*>
-FrameSteadyRearPart::setupLinkPoint_i(real_t x, real_t y, const PositionInfo& origin, bool is_in)
+
+
+///@return link position
+PositionInfo FrameSteadyRearPart::setupLinkPoint_i(real_t x, real_t y, const PositionInfo& origin, bool is_in)
 {
     real_t x0 = origin.x;
     real_t y0 = origin.y;
@@ -70,7 +78,7 @@ FrameSteadyRearPart::setupLinkPoint_i(real_t x, real_t y, const PositionInfo& or
     real_t y1 = y0 + y/2.f;
 
     PositionInfo link_pos_out(x1, y1, z0, origin.yaw, origin.pitch, roll);
-    if( abs(x) >0.f)
+    if( absf(x) >0.f)
     {
         if(is_in)
         {
@@ -79,17 +87,17 @@ FrameSteadyRearPart::setupLinkPoint_i(real_t x, real_t y, const PositionInfo& or
              PositionInfo link_pos_in(x1, y1, -z0, 0.f, 0.f, roll);
              MyBox* linker_in = new MyBox(x, 1.f, 3.f);
              this->addBody(linker_in, link_pos_in, 0.05f );
-             return std::make_tuple(link_pos_out,  linker_out, linker_in);
+             return link_pos_out;
         }
         else
         {
             MyBox* linker = new MyBox(x, z0*2.f, 3.f);
             this->addBody(linker, PositionInfo(x1, y1, 0.f), 0.05f );
-            return std::make_tuple(link_pos_out,  linker, nullptr);
+            return link_pos_out;
         }
     }
 
-    return std::make_tuple(link_pos_out,  nullptr, nullptr);
+    return link_pos_out;
 }
 
 void FrameSteadyRearPart::calcGeometry()

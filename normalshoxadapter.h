@@ -22,29 +22,34 @@ public:
     template<class FrontPart, class RearPart>
     void setupPoint(FrontPart* f, RearPart* r)
     {
-        _fpos = _fpoint->setup(f);
         _rpos = _rpoint->setup(r);
+        PositionInfo wrpos = r->toWorldPosition(_rpos);
+        //shox line y=kx+b
+        real_t k = _shox_roll;
+        real_t b= wrpos.y;
+        real_t y1 = _shox->length()*sin(k)+b;
+        real_t x1= wrpos.x + _shox->length()*cos(k);
+        _wfpos = PositionInfo(x1, y1, wrpos.z);
     }
 
     template<class FrontPart, class RearPart>
     void setupShox(MyDiscreteDynamicsWorld *world, FrontPart* f, RearPart* r)
     {
         real_t slen = _shox->length();
-        real_t fw = abs(_fpos.z*2);
-        PositionInfo wfpos = f->toWorldPosition(_fpos);
-        real_t x=wfpos.x - (slen/2);
-        real_t y = 2.f;// wfpos.y;
-        real_t z = wfpos.z - fw/2;
-        PositionInfo o(x, y, z);
-        _shox->origin(o);
-        _shox->setupLeft( world, r, _rpos, r, PositionInfo(_rpos.x, _rpos.y, -_rpos.z) );
-        _shox->setupRight( world, f, _fpos , f, PositionInfo(_fpos.x, _fpos.y, -_fpos.z) );
-       _shox->attach2World(world);
+        real_t x=_wfpos.x - (slen/2)*cos(_shox_roll);
+        real_t y = _wfpos.y-(slen/2)*sin(_shox_roll);
+        real_t z = _wfpos.z;
+        PositionInfo o(x, y, z, 0, 0, _shox_roll);
+        _shox->moveTo(o);
+        _shox->setupLeft( world, r, _rpos);
+        PositionInfo fpos  = f->toLocalPosition(_wfpos);
+        _shox->setupRight( world, f, fpos );
+        _shox->attach2World(world);
     }
 
 private:
     /// dian pian
-    template<class Part>
+/*    template<class Part>
     MyBox* setSpacer(MyDiscreteDynamicsWorld *world, Part* p, const PositionInfo& pos, bool is_out)
     {
         PositionInfo ppos(pos.x, pos.y, is_out?pos.z:-pos.z, pos.yaw, pos.pitch, pos.roll);
@@ -67,13 +72,14 @@ private:
         world->theWorld()->addConstraint(c);
         return d;
     }
-
+*/
 private:
-    PositionInfo _fpos ;
     PositionInfo _rpos;
+    PositionInfo _wfpos;
     std::auto_ptr<FrontPoint> _fpoint;
     std::auto_ptr<RearPoint> _rpoint;
     std::auto_ptr<Shox> _shox;
+    real_t _shox_roll = torads(25);
 };
 
 #endif // NORMALSHOXSETUP_H

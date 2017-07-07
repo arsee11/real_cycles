@@ -5,6 +5,18 @@
 #include <math.h>
 #include <tuple>
 
+static std::tuple<PositionInfo, MyCylinder *> createTube(real_t x0, real_t y0, real_t x1, real_t y1, real_t left_radius, real_t right_radius)
+{
+    real_t k = (y1-y0)/(x1-x0); //zhi xian xie lv
+    real_t len = sqrt( (y1-y0)*(y1-y0) + (x1-x0)*(x1-x0)); //gou gu ding li
+    MyCylinder* tube = new MyCylinder(left_radius, len, right_radius, MyCylinder::X);
+    real_t angle = atan(k);
+    real_t x = x1 - len/2.f * cos(angle);
+    real_t y = y1 - len/2.f * sin(angle);
+
+    return std::make_tuple(PositionInfo(x, y, 0, 0, 0, angle), tube);
+}
+
 FrameFrontPart::FrameFrontPart(const PositionInfo &origin, real_t mass
 	,real_t HTL, real_t HTA, real_t ETT, real_t STL, real_t STA
     ,real_t REACH, real_t BBH, real_t SOH, real_t STACK , real_t ASTA, real_t ASTL
@@ -126,24 +138,23 @@ void FrameFrontPart::createBB()
     addBody(_bb_mass, _bb,  bb_x, bb_y);
 }
 
-///@return link out pos,  out linker, in linker
-std::tuple<PositionInfo, MyBox*, MyBox*>
-FrameFrontPart::setupLinkPoint(real_t x, real_t y, real_t width, PointBase base, bool is_in)
+///@return link out pos
+PositionInfo FrameFrontPart::setupLinkPoint(real_t x, real_t y, PointBase base)
 {
     real_t x0 ;
     real_t y0 ;
     real_t x1;
     real_t y1;
-    bool is_outline = false;
     PositionInfo origin;
     if(base == PointBase::BASE_BB)
     {
+        PositionInfo origins = _st->origin();
+        int xs0 = origins.x + (_STL/2.f)*cos(torads(_STA));
         origin = _bb->origin();
         x0 = origin.x;
         y0 = origin.y;
-        x1 = x0-x;
+        x1 = x0-2;
         y1 = y0+y;
-        is_outline = (x>0.f || y>0.f);
     }
     else if(base == PointBase::BASE_SEAT)
     {
@@ -152,7 +163,7 @@ FrameFrontPart::setupLinkPoint(real_t x, real_t y, real_t width, PointBase base,
         y0 = origin.y- (y-_STL/2.f)*sin(torads(_STA));
         x1 = x0+x;
         y1 = y0 ;
-        is_outline = abs(x)>0.f;
+
     }
     else if(base == PointBase::BASE_TOP)
     {
@@ -161,9 +172,6 @@ FrameFrontPart::setupLinkPoint(real_t x, real_t y, real_t width, PointBase base,
         y0 = origin.y+ (x-_tt->height()/2.f)*sin(origin.roll);
         x1= x0;
         y1= y0 - y;
-        is_outline = abs(y)>0.f;
-        if(is_outline)
-            y1 -= _tt_r;
     }
     else if(base == PointBase::BASE_BOTTOM)
     {
@@ -171,43 +179,12 @@ FrameFrontPart::setupLinkPoint(real_t x, real_t y, real_t width, PointBase base,
         x0 = origin.x + (x-_bt->height()/2.f)*cos(origin.roll);
         y0 = origin.y+ (x-_bt->height()/2.f)*sin(origin.roll);
         x1= x0;
-        y1= y0 + y;
-        is_outline = abs(y)>0.f;
-        if(is_outline)
-            y1 += _bt_r;
+        y1= y0 + y;       
     }
     else
-         return std::make_tuple(PositionInfo(), nullptr, nullptr);
+         return PositionInfo();
 
-    if(is_in)
-    {
-        real_t z1 = width/2.f + 0.5f;
-        PositionInfo link_pos_out(x1, y1, z1);
-        PositionInfo link_pos_in(x1, y1, -z1);
-        if( is_outline)
-        {
-             MyBox* linker_out = new MyBox(2.f, 1.f, 2.f);
-             this->addBody(linker_out, link_pos_out, 0.05f );
-             MyBox* linker_in = new MyBox(2.f, 1.f, 2.f);
-             this->addBody(linker_in, link_pos_in, 0.05f );
-            return std::make_tuple(link_pos_out, linker_out, linker_in);
-        }
-        else
-            return std::make_tuple(link_pos_out, nullptr, nullptr);
-    }
-    else
-    {
-        real_t z1 = width/2.f;
-        PositionInfo link_pos_out(x1, y1, z1);
-        if( is_outline)
-        {
-            MyBox* linker= new MyBox(2.f, 1.f, 2.f);
-            this->addBody(linker, PositionInfo(x1,y1, 0.f), 0.05f );
-            return std::make_tuple(link_pos_out, linker, nullptr);
-       }
-       else
-            return std::make_tuple(link_pos_out, nullptr, nullptr);
-    }
+   return PositionInfo(x1,  y1, 0);
 }
 
 PositionInfo FrameFrontPart::getBBPosition() const

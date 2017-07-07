@@ -10,6 +10,11 @@ void cycle_draw(const Vex vexs[], int slices)
     int i;
     for(i=0; i<slices*2&&i+2<slices*2; i++)
     {
+        if(i%2)
+            glColor3f(0, 1, 0);
+        else
+            glColor3f(1, 0,0);
+
         Vex v1 = vexs[i];
         Vex v2 = vexs[i+1];
         Vex v3 = vexs[i+2];

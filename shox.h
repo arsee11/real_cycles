@@ -7,14 +7,20 @@
 class HalfShoxPart:public MyCompoundBody
 {
 public:
-    HalfShoxPart(const PositionInfo& origin, real_t mass, real_t radius, real_t len, real_t setup_width=4.f, bool is_left = true);
+    HalfShoxPart(const PositionInfo& origin, real_t mass, real_t radius, real_t len);
 
     /// @return setup_pos_out
-    PositionInfo getSetupPos(){ return _setup_pos_out;  }
+    PositionInfo getSetupPos(bool is_left){
+        if(is_left)
+        {
+            return PositionInfo( -(_len/2.f), 0.f, 0.f);
+        }
+
+         return PositionInfo( _len/2.f, 0.f, 0.f);
+    }
 
 private:
-    real_t _setup_width;
-    PositionInfo _setup_pos_out, _setup_pos_in;
+    real_t _len;
 };
 
 
@@ -24,7 +30,7 @@ class Shox
      static real_t constexpr RIGHT_MASS_FACTOR = 5.f;
 
 public:
-    Shox(const PositionInfo& origin, real_t mass, real_t len, real_t travel);
+    Shox(const PositionInfo& moveTo, real_t mass, real_t len, real_t travel);
     ~Shox(){
         if(_left != nullptr)
             delete _left;
@@ -37,24 +43,27 @@ public:
     }
 
     void attach2World(MyDiscreteDynamicsWorld* world);
-    void origin(const PositionInfo& o);
 
-    real_t setupWidth(){ return 4.f; }
+    //adjusting apis
+    void setDamping(real_t val);
+    void setSpring(real_t val);
+
+    void moveTo(const PositionInfo& o);
+
     real_t length(){ return _len; }
 
     inline void setupLeft(MyDiscreteDynamicsWorld* world
-                          , MyPhysicsBody* body_out, const PositionInfo& point_out
-                          , MyPhysicsBody* body_in, const PositionInfo& point_in)
+                          , MyPhysicsBody* body, const PositionInfo& body_point)
     {
-        PositionInfo part_point = _left->getSetupPos();
-         setup(world, _left, part_point, body_out, point_out, body_in, point_in);
+        PositionInfo part_point = _left->getSetupPos(true);
+         setup(world, _left, part_point, body, body_point);
     }
+
     inline void setupRight(MyDiscreteDynamicsWorld* world
-                           , MyPhysicsBody* body_out, const PositionInfo& point_out
-                           , MyPhysicsBody* body_in, const PositionInfo& point_in)
+                           , MyPhysicsBody* body, const PositionInfo& body_point)
     {
-        PositionInfo part_point = _right->getSetupPos();
-        setup(world, _right, part_point, body_out, point_out, body_in, point_in);
+        PositionInfo part_point = _right->getSetupPos(false);
+        setup(world, _right, part_point, body, body_point);
     }
 
 private:
@@ -64,8 +73,7 @@ private:
 
     void setup(MyDiscreteDynamicsWorld* world
                , HalfShoxPart* part,const PositionInfo& part_point
-               , MyPhysicsBody* body_out, const PositionInfo& point_out
-               , MyPhysicsBody* body_in, const PositionInfo& point_in);
+               , MyPhysicsBody* body, const PositionInfo& body_point);
 
     PositionInfo _origin;
     real_t _mass=0.f;

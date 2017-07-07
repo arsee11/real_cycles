@@ -11,8 +11,10 @@ class ForkUpper : public MyCompoundBody
 public:
     ForkUpper(real_t mass, real_t travel, real_t width, real_t steer_len);
 
-    ///return len width height of effective cube
+    ///@return lenght of this
     real_t getLen(){ return _y; }
+
+    PositionInfo getCrownOrigin();
 
 private:
     MyCylinder* _left_tube=nullptr, *_right_tube=nullptr;

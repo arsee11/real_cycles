@@ -14,10 +14,6 @@ public:
                 ,real_t right_width
                 );
 
-    virtual void makeLeftLink(MyDiscreteDynamicsWorld* world, MyPhysicsBody* body, const PositionInfo&body_point);
-    virtual void makeRightLink(MyDiscreteDynamicsWorld* world, MyPhysicsBody* body, const PositionInfo &body_point);
-
-
 private:
     MyPhysicsBody* _left=nullptr;
     MyPhysicsBody* _right=nullptr;

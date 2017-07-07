@@ -34,6 +34,7 @@ public:
         :_origin(origin)
         ,_WB(WB)
         ,_CSL(CSL)
+        ,_BBDrop(10.f)
     {}
 
     ~Frame()
@@ -53,11 +54,7 @@ public:
     {
         _front = new FrameFrontPart(_origin, fp);
         _rear = new FrameSteadyRearPart(PositionInfo(0,0,0), rp);
-        if(ladpt != nullptr)
-            ladpt->setupPoint(_front, _rear);
 
-        if( sadpt != nullptr)
-            sadpt->setupPoint(_front, _rear);
 
         _front->create();
         //_front->physics_body()->setAngularVelocity(btVector3(0.f, 100.f, 0.f));
@@ -66,11 +63,18 @@ public:
         PositionInfo bb_origin = _front->getBBPosition();
         bb_origin = _front->toWorldPosition(bb_origin);
         const Cube& cube = _rear->cube();
-        real_t x = bb_origin.x - (cube.len()/2.f + _CSL-cube.len());
-        real_t y = bb_origin.y + cube.height()/2.f;
-        _rear->origin(PositionInfo(x, y, _origin.z));
+        real_t roll = atan( _BBDrop/_CSL);
+        real_t x = bb_origin.x - (cube.len()/2.f + _CSL-cube.len()*cos(roll));
+        real_t y = bb_origin.y + (cube.len()/2.f*tan(roll)+cube.height()/2.f)*cos(roll);
+        _rear->origin(PositionInfo(x, y, _origin.z, 0.f, 0.f, -roll));
         _rear->create();
         _rear->attach2World(world);
+
+        if(ladpt != nullptr)
+            ladpt->setupPoint(_front, _rear);
+
+        if( sadpt != nullptr)
+            sadpt->setupPoint(_front, _rear);
 
         if(ladpt != nullptr)
             ladpt->setupLinker(world, _front, _rear);
@@ -79,11 +83,29 @@ public:
             sadpt->setupShox(world, _front, _rear);
     }
 
-    //Head tube world postion
-    PositionInfo getHTPosition(){
-        PositionInfo pos = _front->getHTPosition();
-        return _front->toWorldPosition(pos);
+    PositionInfo getForkSetupLocalPosition()const {
+        PositionInfo oht =  _front->getHTPosition();
+        oht.x += HTL()/2.f * cos( torads(HTA()) );
+        oht.y -= HTL()/2.f * sin( torads(HTA()) );
+        PositionInfo o =_front->origin();
+        oht.yaw = o.yaw;
+        oht.pitch = o.pitch;
+        oht.roll = o.roll;
+        return oht;
     }
+    PositionInfo getForkSetupWorldPosition(){ return _front->toWorldPosition(getForkSetupLocalPosition()); }
+
+    PositionInfo getWheelSetupLocalPosition()const{
+        return _rear->getWheelSetupLocalPosition();
+    }
+    PositionInfo getWheelSetupWorldPosition()const{
+        return _rear->toWorldPosition( getWheelSetupLocalPosition() );
+    }
+
+    real_t HTL()const { return _front->HTL(); }
+    real_t HTA()const { return _front->HTA(); }
+    btRigidBody* front_body()const { return _front-> physics_body(); }
+    btRigidBody* wheel_setup_body()const { return _rear->physics_body(); }
 
 private:
     FrontPart* _front=nullptr;
@@ -91,6 +113,7 @@ private:
     PositionInfo _origin;
     real_t _WB;
     real_t _CSL;
+    real_t _BBDrop;
 };
 
 #endif // FRAME_H

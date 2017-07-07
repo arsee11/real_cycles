@@ -13,13 +13,18 @@
 #include "cylinder.h"
 #include "fork.h"
 #include "frame.h"
-#include "twolinkersetup.h"
+#include "twolinkeradapter.h"
 #include "bansheerune.h"
 #include "inneroutlinker.h"
-#include "normalshoxsetup.h"
+#include "normalshoxadapter.h"
 #include "myconvexhullbody.h"
 #include "mytubebody.h"
 #include "forkadapter.h"
+#include "handlebar.h"
+#include "handlebaradapter.h"
+#include "stem.h"
+#include "wheel.h"
+#include "wheeladapter.h"
 #include <GL/glu.h>
 #include <QOpenGLFunctions>
 #include <QTimer>
@@ -62,20 +67,80 @@ void MyGLWidget::initializeGL()
     typedef Frame<FrameFrontPart, FrameSteadyRearPart, banshee_rune_linker_adapter_t, bashee_rune_shox_adapter_t>  frame_t;
     frame_t *f = new frame_t(PositionInfo(0,0, -40), 114.2, 43);
     frame_t::front_param_t fp = {3.f ,12.f, 65.f, 60.f, 43.f, 74.5f, 42.f, 34.f, 72.f, 59.f};
-    frame_t::rear_param_t rp = {1.f, 37.f, 41.f, 23.f, 15.f, 8.f};
+    frame_t::rear_param_t rp = {1.f, 38.f, 38.f, 23.f, 15.f, 8.f};
     banshee_rune_linker_adapter_t* ls = new banshee_rune_linker_adapter_t(6.f, 7.f);
     bashee_rune_shox_adapter_t* ss = new bashee_rune_shox_adapter_t( new Shox(PositionInfo(0.f, 0.f, 0.f), 0.5f, 22.0f, 5.5f) );
     f->create(_world, fp, rp, ls, ss);
 
-    Fork* fork = new Fork(PositionInfo(50, 0, -40, torads(90), -torads((90-66))), 2.0, 16, 70, 20, 10);
+    Fork* fork = new Fork(PositionInfo(50, 0, -40, torads(90)), 2.0, 16, 70, 20, 10);
     fork->attach2world(_world);
 
     ForkAdapter<frame_t, Fork> fa(f, fork);
     fa.setup(_world);
 
-    //WorkShop::setupFrame();
-    //WorkShop::setupFork();
-    //WorkShop::setupWheels();
+    Handlebar* bar = new Handlebar(PositionInfo(0,0, -40), 0.3f,  76.0f, 3.18f, 2.f, 5.f, 8.f);
+    bar->attach2World(_world);
+    //bar->physics_body()->setAngularVelocity(btVector3(0, 5, 0));
+
+    Stem* stem = new Stem(PositionInfo(0,0, -40, torads(-90)), 0.2f, 6.f, 15.f);
+    stem->attach2World(_world);
+
+    HandlebarAdapter<Fork, Stem, Handlebar> ha(fork, stem, bar);
+    ha.setup(_world);
+
+    Wheel* rear_wheel = new Wheel(PositionInfo(0, 0, -40), 3, 26, 2.35, 12, 1.2);
+    rear_wheel->attach2World(_world);
+    //rear_wheel->physics_body()->setFriction(3.f);
+    //rear_wheel->physics_body()->setAngularVelocity(btVector3(0, 0, -20));
+
+    WheelAdapter<frame_t, Wheel> rwa(f, rear_wheel);
+    rwa.setup(_world);
+
+    Wheel* front_wheel = new Wheel(PositionInfo(0, 0, -40), 2.5, 26, 2.35, 10, 1.5);
+    front_wheel->attach2World(_world);
+    //front_wheel->physics_body()->setAngularVelocity(btVector3(0, 0, -20));
+
+    WheelAdapter<Fork, Wheel> fwa(fork, front_wheel);
+    fwa.setup(_world);
+
+/*
+    MyBox* box1 = new MyBox(10, 5, 5, PositionInfo(0,-20,0), 1);
+    box1->color(255, 0, 0);
+    box1->attach2World(_world);
+
+    MyBox* box2 = new MyBox(20, 5, 5, PositionInfo(7.5, -20,0, torads(90)), 2);
+    box2->color(0, 255, 0);
+    box2->attach2World(_world);
+
+    btTransform localA, localB;
+     localA.setIdentity();
+     localA.setOrigin( btVector3(5,  0, 0) );
+     localA.setRotation(btQuaternion(0, 0, 0));
+     localB.setIdentity();
+     localB.setOrigin(btVector3(0,  0, -2.5));
+     localB.setRotation(btQuaternion(torads(-90),  0, 0));
+    btFixedConstraint* c = new btFixedConstraint( *(box1->physics_body()), *(box2->physics_body()), localA, localB);
+    _world->theWorld()->addConstraint(c, true);
+*/
+
+    /*
+    MyBox* box1 = new MyBox(3, 2, 40, PositionInfo(0,0,-22), 3);
+    box1->color(255, 0, 0);
+    box1->attach2World(_world);
+    box1->physics_body()->setAngularVelocity(btVector3(0,0, 5));
+
+    MyCylinder* c1 = new MyCylinder(10, 2, 10, PositionInfo(0,0,-20),1, MyCylinder::AroundType::Z);
+    c1->attach2World(_world);
+    c1->color(0, 255,0);
+
+    btVector3 axisA(0.f, 0.f, 1.f);
+    btVector3 axisB(0.f, 0.f, 1.f);
+    btVector3 pivotA(0, 0.f, 1.f);
+    btVector3 pivotB( 0.f, 0.f, -1.f);
+   btHingeConstraint*  spHingeDynAB = new btHingeConstraint(*(box1->physics_body()), *(c1->physics_body()), pivotA, pivotB, axisA, axisB);
+   _world->theWorld()->addConstraint(spHingeDynAB);
+    //spHingeDynAB->setLimit(-SIMD_HALF_PI * 0.5f, SIMD_HALF_PI * 0.5f);
+    */
 
     _timer = new QTimer(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));

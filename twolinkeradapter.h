@@ -30,25 +30,39 @@ public:
     void setupLinker(MyDiscreteDynamicsWorld *world, FrontPart* f, RearPart* r)
     {
         PositionInfo wfpos1 = f->toWorldPosition(_fpos1);
-        PositionInfo wfpos2 = f->toWorldPosition(_fpos2);
-        real_t rw1 = abs(_rpos1.z*2);
-        real_t fw1 = abs(_fpos1.z*2);
-        real_t x=wfpos1.x - (_len1/2);
-        real_t y = wfpos1.y;
-        real_t z = wfpos1.z - fw1/2;
-        PositionInfo o(x, y, z);
-        _l1 = std::auto_ptr<Linker1>(new Linker1(o, 0.1f, _len1+2, rw1, fw1));
+        PositionInfo wrpos1 = r->toWorldPosition(_rpos1);
+        real_t absx = absf(wfpos1.x-wrpos1.x);
+        real_t absy = absf(wfpos1.y-wrpos1.y);
+         _len1 =pow( pow(absx, 2)+pow(absy, 2), 0.5 );
+         real_t roll=0;
+         if(absy>0)
+            roll = atan(absy/absx);
+
+        real_t x=wfpos1.x - (_len1/2)*cos(roll);
+        real_t y = wfpos1.y+(_len1/2)*sin(-roll);
+        real_t fw1 = FrontPoint1().getParam().width;
+        real_t z = f->origin().z;
+
+        real_t rw1 = r->tyre_width();
+        PositionInfo o(x, y, z, 0.f, 0.f, roll);
+        _l1 = std::auto_ptr<Linker1>(new Linker1(o, 0.1f, _len1, rw1, fw1));
         _l1->makeLeftLink(world, r, _rpos1);
         _l1->makeRightLink(world, f, _fpos1);
         _l1->attach2World(world);
 
-        real_t rw2 = abs(_rpos2.z*2);
-        real_t fw2 = abs(_fpos2.z*2);
-        x=wfpos2.x - _len2/2;
-        y = wfpos2.y;
-        z =  wfpos2.z - fw2/2;;
-        o = PositionInfo(x, y, z);
-        _l2 = std::auto_ptr<Linker2>(new Linker2(o, 0.1f, _len2+2, rw2, fw2));
+        PositionInfo wfpos2 = f->toWorldPosition(_fpos2);
+        PositionInfo wrpos2 = r->toWorldPosition(_rpos2);
+        absx = absf(wfpos2.x-wrpos2.x);
+        absy = absf(wfpos2.y-wrpos2.y);
+        _len2 =pow( pow(absx, 2)+pow(absy, 2), 0.5 );
+        roll = atan(absy/absx);
+        x=wfpos2.x - _len2/2*cos(roll);
+        y = wfpos2.y+_len2/2*sin(roll);
+        real_t fw2 = FrontPoint2().getParam().width;
+
+        real_t rw2 = r->tyre_width();
+        o = PositionInfo(x, y, z, 0.f, 0.f, -roll);
+        _l2 = std::auto_ptr<Linker2>(new Linker2(o, 0.1f, _len2, rw2, fw2));
         _l2->makeLeftLink(world, r, _rpos2);
         _l2->makeRightLink(world, f, _fpos2);
         _l2->attach2World(world);

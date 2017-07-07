@@ -63,15 +63,19 @@ public:
     ///          base == BASE_BOTTOM BB原点为0点，向右为正; BASE_TOP seat tube 右边为0点; \n
     ///@param y, 当 base == BASE_BB 由BB原点为0点，向上为正; base==BASE_SEAT 由seat tube顶点向下; \n
     ///          base == BASE_BOTTOM 上边为正; base==BASE_TOP 下边为正
-    ///@param width 宽度
-    ///@param is_in, -true inner link point, -false outside link point
-    ///@return link out pos, out linker, in linker
-    std::tuple<PositionInfo, MyBox *, MyBox *> setupLinkPoint(real_t x, real_t y, real_t width, PointBase base, bool is_in=true);
+    ///@return link  position
+   PositionInfo setupLinkPoint(real_t x, real_t y, PointBase base);
 
     void create(){ this->createSelf();}
+
+    //BB position base on frame
     PositionInfo getBBPosition()const;
-    //head tube position
+
+    //head tube position base on frame
     PositionInfo getHTPosition()const;
+
+    real_t HTL()const { return _HTL; }
+    real_t HTA()const { return _HTA; }
 
 private:
     void createHeadTube();
