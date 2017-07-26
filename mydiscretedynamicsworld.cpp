@@ -1,4 +1,5 @@
 #include "mydiscretedynamicsworld.h"
+#include "myrigidbody.h"
 #include <exception>
 #include <QDebug>
 
@@ -7,36 +8,39 @@ struct Quaternion
     real_t x,y,z,w;
 };
 
-MyDiscreteDynamicsWorld::MyDiscreteDynamicsWorld(bodies_state_delegate deletgate)
+MyDynamicsWorld::MyDynamicsWorld(BodisStateDelegate deletgate)
     :_bodies_state_delegate(deletgate)
 {
     init();
 }
 
-MyDiscreteDynamicsWorld::~MyDiscreteDynamicsWorld()
+MyDynamicsWorld::~MyDynamicsWorld()
 {
     uninit();
 }
 
-void MyDiscreteDynamicsWorld::stopSimulation()
+void MyDynamicsWorld::stopSimulation()
 {
     _is_stop = true;
 }
 
-void MyDiscreteDynamicsWorld::doSimulation()
+void MyDynamicsWorld::addRigidBody(MyRigidBody *body){
+    btRigidBody* btbody = static_cast<btRigidBody*>(body->getRawBody());
+    theWorld()->addRigidBody(btbody);
+    _rigid_body_list.push_back(body);
+}
+
+void MyDynamicsWorld::doSimulation(real_t framerate)
 {
     _is_stop = false;
-    if( _the_world == nullptr)
-        throw std::exception();
+    assert(_the_world );
 
-    _the_world->stepSimulation(1.f/60.f, 1.f);
+    _the_world->stepSimulation(1.f/framerate, 1.f, 1.f/framerate);
     bodies_state_t states;
     for (int j=_the_world->getNumCollisionObjects()-1; j>=0 ;j--)
     {
         btCollisionObject* obj = _the_world->getCollisionObjectArray()[j];
         btRigidBody* body = btRigidBody::upcast(obj);
-        //if(body->getUserIndex() == 2)
-        //     body->applyCentralForce(btVector3(0.f, -10.f, 0.f));
 
         btTransform trans;
         if (body && body->getMotionState())
@@ -51,20 +55,22 @@ void MyDiscreteDynamicsWorld::doSimulation()
        qDebug()<<"world pos object =         "<<j <<"(x,y,z):"<<real_t(trans.getOrigin().getX())<<","<<real_t(trans.getOrigin().getY())<<","<<real_t(trans.getOrigin().getZ());
         qDebug()<<"world rotation object = "<<j <<"(x,y,z,angle):"<<ax<<","<<ay<<"," <<az<<","<<ag;
 
-        BodyTransInfo pos= { _bodies[body->getUserIndex()]
+        void* ptr = body->getUserPointer();
+        BodyTransInfo pos= { static_cast<MyRigidBody*>(body->getUserPointer())
                         , trans.getOrigin().getX()
                         , trans.getOrigin().getY()
                         , trans.getOrigin().getZ()
                         , ax ,ay ,az,ag};
 
         states.push_back(pos);
-
-        if(_bodies_state_delegate != nullptr)
-            _bodies_state_delegate(states);
     }
+
+    if(_bodies_state_delegate != nullptr)
+        _bodies_state_delegate(states);
+
 }
 
-bool MyDiscreteDynamicsWorld::init()
+bool MyDynamicsWorld::init()
 {
         ///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
         _collision_conf = new btDefaultCollisionConfiguration();
@@ -79,11 +85,12 @@ bool MyDiscreteDynamicsWorld::init()
         _constraint_solver = new btSequentialImpulseConstraintSolver;
 
         _the_world = new btDiscreteDynamicsWorld(_collision_dispatcher, _broadphase, _constraint_solver, _collision_conf);
+        _the_world->setInternalTickCallback(&MyDynamicsWorld::preTickCallback, this, true);
 
         return true;
 }
 
-void MyDiscreteDynamicsWorld::uninit()
+void MyDynamicsWorld::uninit()
 {
     if(_the_world != nullptr)
         delete _the_world;
@@ -100,12 +107,20 @@ void MyDiscreteDynamicsWorld::uninit()
     if(_collision_conf != nullptr)
         delete _collision_conf;
 
-    for (int j=0; j<_collision_shapes.size(); j++)
+    /*for (int j=0; j<_collision_shapes.size(); j++)
     {
         btCollisionShape* shape = _collision_shapes[j];
         _collision_shapes[j] = 0;
         delete shape;
     }
     _collision_shapes.clear();
+    */
+}
 
+void MyDynamicsWorld::preTickCallback(btDynamicsWorld *world, btScalar time_step)
+{
+    MyDynamicsWorld *me = static_cast<MyDynamicsWorld*>(world->getWorldUserInfo());
+    assert(me);
+    if(me->_prestep_delegate != nullptr)
+        me->_prestep_delegate(me, time_step);
 }

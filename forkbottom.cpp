@@ -11,7 +11,7 @@ ForkBottom::ForkBottom(real_t mass, real_t len, real_t axle)
     _y = len;
 
     real_t cmass = mass/3.f;
-    real_t linker_height = 4.f;
+
     //fork legs
      _left_leg = new MyCylinder(2.8f, len, 2.8f);
      _left_leg->color(255, 0, 0);

@@ -66,7 +66,7 @@ Shox::Shox(const PositionInfo &origin, real_t mass, real_t len, real_t travel)
     makeLink();
 }
 
-void Shox::attach2World(MyDiscreteDynamicsWorld *world){
+void Shox::attach2World(MyDynamicsWorld *world){
     if(_left != nullptr)
         _left->attach2World(world);
 
@@ -121,7 +121,7 @@ void Shox::makeLink()
                 *(_left->physics_body()), *(_right->physics_body()), localA, localB);
 
     //_link->setBreakingImpulseThreshold(100000000.f);
-    _link->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+    _link->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
     _link->setLimit(0, -_travel, 0);
     _link->setLimit(1, 0, 0);
     _link->setLimit(2, 0, 0);
@@ -137,9 +137,9 @@ void Shox::makeLink()
 
 }
 
-void Shox::setup(MyDiscreteDynamicsWorld *world
+void Shox::setup(MyDynamicsWorld *world
                  , HalfShoxPart *part, const PositionInfo &part_point
-                 , MyPhysicsBody *body, const PositionInfo &body_point)
+                 , MyRigidBody *body, const PositionInfo &body_point)
 {
 
     btVector3 axis_this(0.f, 0.f, 1.f);
@@ -149,7 +149,7 @@ void Shox::setup(MyDiscreteDynamicsWorld *world
     btHingeConstraint*  hinge = new btHingeConstraint(*(part->physics_body()), *(body->physics_body())
                                                   , pivot_this, pivot_body, axis_this, axis_body);
 
-    hinge->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+    hinge->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
     world->theWorld()->addConstraint(hinge);
 
 }

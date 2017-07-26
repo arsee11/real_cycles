@@ -11,7 +11,7 @@ Linker::Linker(const PositionInfo &origin, real_t mass, real_t len, real_t left_
 
 }
 
-void Linker::makeLink(MyDiscreteDynamicsWorld *world, const PositionInfo&this_point, MyPhysicsBody *body, const PositionInfo &body_point)
+void Linker::makeLink(MyDynamicsWorld *world, const PositionInfo&this_point, MyRigidBody *body, const PositionInfo &body_point)
 {
     btVector3 axis_this(0.f, 0.f, 1.f);
     btVector3 axis_body(0.f, 0.f, 1.f);
@@ -21,19 +21,19 @@ void Linker::makeLink(MyDiscreteDynamicsWorld *world, const PositionInfo&this_po
                                                      , pivot_this, pivot_body, axis_this, axis_body);
 
     //hinge->setBreakingImpulseThreshold(5.f);
-    hinge->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+    hinge->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
     world->theWorld()->addConstraint(hinge);
 }
 
 
-void Linker::makeLeftLink(MyDiscreteDynamicsWorld *world, MyPhysicsBody *body, const PositionInfo &body_point)
+void Linker::makeLeftLink(MyDynamicsWorld *world, MyRigidBody *body, const PositionInfo &body_point)
 {
     PositionInfo anchor1( -(_len/2.f), 0.f, 0.f );
     PositionInfo body_point1 = body_point;
     makeLink(world, anchor1, body, body_point1);    
 }
 
-void Linker::makeRightLink(MyDiscreteDynamicsWorld *world, MyPhysicsBody *body, const PositionInfo &body_point)
+void Linker::makeRightLink(MyDynamicsWorld *world, MyRigidBody *body, const PositionInfo &body_point)
 {
     PositionInfo anchor1( _len/2.f, 0.f, 0.f );
     PositionInfo body_point1 = body_point;

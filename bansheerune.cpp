@@ -29,7 +29,7 @@ FrontShoxPoint::Param FrontShoxPoint::getParam()
 
 RearShoxPoint::Param RearShoxPoint::getParam()
 {
-    return Param(13.f, 0.f, 4.f);
+    return Param(8.f, 0.f, 4.f);
 }
 
 }

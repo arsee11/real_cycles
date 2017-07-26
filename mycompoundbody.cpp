@@ -13,7 +13,7 @@
 }
 */
 MyCompoundBody::MyCompoundBody(const PositionInfo &origin, real_t mass)
-    :MyPhysicsBody(origin)
+    :MyRigidBody(origin)
     ,_mass(mass)
 {
     this->_shape = new btCompoundShape();
@@ -57,9 +57,9 @@ void MyCompoundBody::createSelf()
 
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     btDefaultMotionState* myMotionState = new btDefaultMotionState(trans);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(5.f,myMotionState,_shape,localInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(_mass,myMotionState,_shape,localInertia);
     _body = new btRigidBody(rbInfo);
-    _body->setUserIndex(_id);
+    _body->setUserPointer(this);
 }
 
 void MyCompoundBody::render(const BodyTransInfo &info)

@@ -1,26 +1,26 @@
-#ifndef MYPYSICSBODY_H
-#define MYPYSICSBODY_H
+#ifndef MYRIGIDBODY_H
+#define MYRIGIDBODY_H
 
 #include "cube.h"
 #include <btBulletDynamicsCommon.h>
 
 const real_t FACTOR = 100.f;
 
-class MyDiscreteDynamicsWorld;
+class MyDynamicsWorld;
 class BodyTransInfo;
 
-class  MyPhysicsBody
+class  MyRigidBody
 {
 public:
-    MyPhysicsBody(const PositionInfo& origin=PositionInfo())
+    MyRigidBody(const PositionInfo& origin=PositionInfo())
         :_origin(origin)
     {
         _id = id_counter++;
     }
 
-    virtual ~MyPhysicsBody(){}
+    virtual ~MyRigidBody(){}
 
-    void attach2World(MyDiscreteDynamicsWorld* world);
+    void attach2World(MyDynamicsWorld* world);
 
     void origin(const PositionInfo& value);
     void origin(PositionInfo&& value){ origin(value); }
@@ -30,14 +30,15 @@ public:
     virtual void color(int r, int g, int b){ _color.r = r; _color.g = g; _color.b = b; }
     int id(){ return _id;}
     btRigidBody* physics_body(){ return _body; }
+    void* getRawBody(){ return _body; }
     btCollisionShape* shape(){ return _shape; }
     virtual const Cube& cube()const{ return Cube(); }
 
     PositionInfo toWorldPosition(const PositionInfo& origin) const;
     PositionInfo toLocalPosition(const PositionInfo& origin) const;
 
-    virtual void addBody( MyPhysicsBody* body, real_t x=0, real_t y=0, real_t z=0, real_t yaw=0, real_t pitch=0, real_t roll=0){}
-    virtual void addBody(MyPhysicsBody* body, const btTransform& trans = btTransform(btQuaternion(0,0,0))){}
+    virtual void addBody( MyRigidBody* body, real_t x=0, real_t y=0, real_t z=0, real_t yaw=0, real_t pitch=0, real_t roll=0){}
+    virtual void addBody(MyRigidBody* body, const btTransform& trans = btTransform(btQuaternion(0,0,0))){}
     virtual void render(const BodyTransInfo& info) = 0;
 
 protected:
@@ -55,4 +56,4 @@ protected:
 };
 
 
-#endif // MYPYSICSBODY_H
+#endif // MYRIGIDBODY_H

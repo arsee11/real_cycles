@@ -15,7 +15,7 @@ public:
         ,_bar(bar)
     {}
 
-    void setup(MyDiscreteDynamicsWorld* world);
+    void setup(MyDynamicsWorld* world);
 
 private:
     Fork* _fork;
@@ -24,7 +24,7 @@ private:
 };
 
 template<class Fork, class Stem, class Bar>
-void  HandlebarAdapter<Fork, Stem, Bar>::setup(MyDiscreteDynamicsWorld* world){
+void  HandlebarAdapter<Fork, Stem, Bar>::setup(MyDynamicsWorld* world){
 
     PositionInfo wfkpos = _fork->getSteerTubeTopWorldPosition();
     real_t l=_stem->len();
@@ -47,7 +47,7 @@ void  HandlebarAdapter<Fork, Stem, Bar>::setup(MyDiscreteDynamicsWorld* world){
      btFixedConstraint* constraint =  new btFixedConstraint(
                  *(_fork->upper_body()), *(_stem->physics_body()), localA, localB);
 
-     constraint->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+     constraint->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
      world->theWorld()->addConstraint(constraint, true);
 
      PositionInfo wsrpos =_stem->getRightSetupWorldPosition();
@@ -67,7 +67,7 @@ void  HandlebarAdapter<Fork, Stem, Bar>::setup(MyDiscreteDynamicsWorld* world){
      constraint =  new btFixedConstraint(
                  *(_stem->physics_body()), *(_bar->physics_body()), localA, localB);
 
-     constraint->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+     constraint->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
      world->theWorld()->addConstraint(constraint, true);
 }
 

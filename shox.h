@@ -42,7 +42,7 @@ public:
             delete _link;
     }
 
-    void attach2World(MyDiscreteDynamicsWorld* world);
+    void attach2World(MyDynamicsWorld* world);
 
     //adjusting apis
     void setDamping(real_t val);
@@ -52,15 +52,15 @@ public:
 
     real_t length(){ return _len; }
 
-    inline void setupLeft(MyDiscreteDynamicsWorld* world
-                          , MyPhysicsBody* body, const PositionInfo& body_point)
+    inline void setupLeft(MyDynamicsWorld* world
+                          , MyRigidBody* body, const PositionInfo& body_point)
     {
         PositionInfo part_point = _left->getSetupPos(true);
          setup(world, _left, part_point, body, body_point);
     }
 
-    inline void setupRight(MyDiscreteDynamicsWorld* world
-                           , MyPhysicsBody* body, const PositionInfo& body_point)
+    inline void setupRight(MyDynamicsWorld* world
+                           , MyRigidBody* body, const PositionInfo& body_point)
     {
         PositionInfo part_point = _right->getSetupPos(false);
         setup(world, _right, part_point, body, body_point);
@@ -71,9 +71,9 @@ private:
     void createRightPart();
     void makeLink();
 
-    void setup(MyDiscreteDynamicsWorld* world
+    void setup(MyDynamicsWorld* world
                , HalfShoxPart* part,const PositionInfo& part_point
-               , MyPhysicsBody* body, const PositionInfo& body_point);
+               , MyRigidBody* body, const PositionInfo& body_point);
 
     PositionInfo _origin;
     real_t _mass=0.f;

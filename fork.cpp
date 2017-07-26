@@ -28,7 +28,7 @@ Fork::Fork(const PositionInfo &origin, real_t mass, real_t travel, real_t len, r
     _constraint =  new btGeneric6DofSpring2Constraint(
                 *(_forku->physics_body()), *(_forkb->physics_body()), localA, localB);
 
-    _constraint->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+    _constraint->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
     _constraint->setLimit(0, 0, 0);
     _constraint->setLimit(1, 0, travel);
     _constraint->setLimit(2, 0, 0);
@@ -40,7 +40,7 @@ Fork::Fork(const PositionInfo &origin, real_t mass, real_t travel, real_t len, r
     _constraint->setDamping(1, 40.f);
 }
 
-void Fork::attach2world(MyDiscreteDynamicsWorld *world)
+void Fork::attach2world(MyDynamicsWorld *world)
 {
     _forkb->attach2World(world);
     _forku->attach2World(world);

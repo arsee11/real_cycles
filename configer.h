@@ -3,7 +3,8 @@
 
 
 struct PhysicsConfiger{
-    const static int OverrideNumSolverIterations = 100;
+    const static int NumSolverIterations = 100;
+    static constexpr real_t Gravity = -9.8;
 };
 
 #endif // CONFIGER_H

@@ -25,6 +25,7 @@
 #include "stem.h"
 #include "wheel.h"
 #include "wheeladapter.h"
+#include "pumptrack.h"
 #include <GL/glu.h>
 #include <QOpenGLFunctions>
 #include <QTimer>
@@ -40,16 +41,16 @@ void MyGLWidget::onWorldStateChanged(const bodies_state_t& states)
 void MyGLWidget::onTimeout()
 {
     if(_world!= nullptr)
-        _world->doSimulation();
+        _world->doSimulation(30);
 }
 
 void MyGLWidget::initializeGL()
 {
-    _world = new MyDiscreteDynamicsWorld(std::bind(&MyGLWidget::onWorldStateChanged, this, std::placeholders::_1));
+    _world = new MyDynamicsWorld(std::bind(&MyGLWidget::onWorldStateChanged, this, std::placeholders::_1));
 
-    _world->setGravity(0.f, -10.f, 0.f);
-    MyGround* g = new MyGround(900, 1000, 2, PositionInfo(0, -90, 0));
-    g->color(MyBox::UP, Color(0,200,0));
+    _world->setGravity(0.f, PhysicsConfiger::Gravity, 0.f);
+    PumpTrack* g = new PumpTrack(PositionInfo(0, -90, 0));
+    //g->color(MyBox::UP, Color(0,200,0));
     //g->physics_body()->setRestitution(1.f);
     g->physics_body()->setFriction(3.f);
     g->attach2World(_world);
@@ -65,7 +66,7 @@ void MyGLWidget::initializeGL()
             > bashee_rune_shox_adapter_t;
 
     typedef Frame<FrameFrontPart, FrameSteadyRearPart, banshee_rune_linker_adapter_t, bashee_rune_shox_adapter_t>  frame_t;
-    frame_t *f = new frame_t(PositionInfo(0,0, -40), 114.2, 43);
+    frame_t *f = new frame_t(PositionInfo(-250, 40, -80), 114.2, 43);
     frame_t::front_param_t fp = {3.f ,12.f, 65.f, 60.f, 43.f, 74.5f, 42.f, 34.f, 72.f, 59.f};
     frame_t::rear_param_t rp = {1.f, 38.f, 38.f, 23.f, 15.f, 8.f};
     banshee_rune_linker_adapter_t* ls = new banshee_rune_linker_adapter_t(6.f, 7.f);
@@ -144,7 +145,7 @@ void MyGLWidget::initializeGL()
 
     _timer = new QTimer(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
-    _timer->start(1);
+    _timer->start(1/30.f*1000);
 
     glEnable(GL_DEPTH_TEST);
      //   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

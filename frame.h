@@ -46,7 +46,7 @@ public:
             delete _rear;        
     }
 
-    void create(MyDiscreteDynamicsWorld* world
+    void create(MyDynamicsWorld* world
                 , const front_param_t& fp
                 , const rear_param_t& rp
                 , LinkerAdapter* ladpt=nullptr

@@ -28,7 +28,7 @@ protected:
     void paintGL();
 
     QTimer* _timer;
-    MyDiscreteDynamicsWorld* _world=nullptr;
+    MyDynamicsWorld* _world=nullptr;
 
     bodies_state_t _bodies_state;
     void createFork();

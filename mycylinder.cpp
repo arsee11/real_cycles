@@ -6,7 +6,7 @@
 #include "cylinder.h"
 
 MyCylinder::MyCylinder(real_t base_radius, real_t height, real_t top_radius, const PositionInfo& origin, real_t mass, AroundType type)
-    :MyPhysicsBody(origin)
+    :MyRigidBody(origin)
     ,_base_radius(base_radius)
     ,_height(height)
     ,_top_radius(top_radius)

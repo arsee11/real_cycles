@@ -1,15 +1,14 @@
-#include "myphysicsbody.h"
+#include "myrigidbody.h"
 #include "mydiscretedynamicsworld.h"
 
-uint MyPhysicsBody::id_counter=0;
+uint MyRigidBody::id_counter=0;
 
-void MyPhysicsBody::attach2World(MyDiscreteDynamicsWorld *world){
-    world->addCollisionShape( _shape);
-    world->theWorld()->addRigidBody(_body);
-    world->addBody(_id, this);
+void MyRigidBody::attach2World(MyDynamicsWorld *world){
+    //world->addCollisionShape( _shape);
+    world->addRigidBody(this);
 }
 
-void MyPhysicsBody::origin(const PositionInfo &origin)
+void MyRigidBody::origin(const PositionInfo &origin)
 {
     _origin = origin;
     btTransform trans( btQuaternion(origin.yaw, origin.pitch, origin.roll)
@@ -20,7 +19,7 @@ void MyPhysicsBody::origin(const PositionInfo &origin)
         _body->setMotionState(m);
 }
 
-PositionInfo MyPhysicsBody::toWorldPosition(const PositionInfo &origin) const{
+PositionInfo MyRigidBody::toWorldPosition(const PositionInfo &origin) const{
     PositionInfo thiso = this->origin();
     real_t len = origin.y;
     real_t xz_projection = len * sin(thiso.pitch);
@@ -34,7 +33,7 @@ PositionInfo MyPhysicsBody::toWorldPosition(const PositionInfo &origin) const{
     return PositionInfo(x, y, z, thiso.yaw, thiso.pitch, thiso.roll);
 }
 
-PositionInfo MyPhysicsBody::toLocalPosition(const PositionInfo &origin) const
+PositionInfo MyRigidBody::toLocalPosition(const PositionInfo &origin) const
 {
     PositionInfo thiso = this->origin();
     real_t x = origin.x - thiso.x;
@@ -43,7 +42,7 @@ PositionInfo MyPhysicsBody::toLocalPosition(const PositionInfo &origin) const
     return PositionInfo(x, y, z);
 }
 
-void MyPhysicsBody::createPhysicsBody(btCollisionShape *shape, real_t mass)
+void MyRigidBody::createPhysicsBody(btCollisionShape *shape, real_t mass)
 {
     _shape = shape;
     btTransform trans;
@@ -60,5 +59,5 @@ void MyPhysicsBody::createPhysicsBody(btCollisionShape *shape, real_t mass)
     btDefaultMotionState* myMotionState = new btDefaultMotionState(trans);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,_shape,localInertia);
     _body = new btRigidBody(rbInfo);
-    _body->setUserIndex(_id);
+    _body->setUserPointer(this);
 }

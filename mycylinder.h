@@ -1,11 +1,11 @@
 #ifndef MYCYLINDER_H
 #define MYCYLINDER_H
 
-#include "myphysicsbody.h"
+#include "myrigidbody.h"
 
 
 
-class MyCylinder : public MyPhysicsBody
+class MyCylinder : public MyRigidBody
 {
 public:
     enum AroundType{

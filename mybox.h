@@ -1,10 +1,10 @@
 #ifndef MYBOX_H
 #define MYBOX_H
 
-#include "myphysicsbody.h"
+#include "myrigidbody.h"
 #include "cube.h"
 
-class MyBox: public MyPhysicsBody
+class MyBox: public MyRigidBody
 {
 public:
     enum Face{

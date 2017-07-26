@@ -14,9 +14,9 @@ public:
     );
 
 private:
-    MyPhysicsBody* _left=nullptr;
-    MyPhysicsBody* _right_out=nullptr;
-    MyPhysicsBody* _right_in=nullptr;
+    MyRigidBody* _left=nullptr;
+    MyRigidBody* _right_out=nullptr;
+    MyRigidBody* _right_in=nullptr;
 };
 
 #endif // INNEROUTLINKER_H

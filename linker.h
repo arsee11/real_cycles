@@ -17,8 +17,8 @@ public:
 
     const Cube& cube()const override{ return _cube;}
 
-    virtual void makeLeftLink(MyDiscreteDynamicsWorld* world, MyPhysicsBody* body, const PositionInfo&body_point);
-    virtual void makeRightLink(MyDiscreteDynamicsWorld* world, MyPhysicsBody* body, const PositionInfo &body_point);
+    virtual void makeLeftLink(MyDynamicsWorld* world, MyRigidBody* body, const PositionInfo&body_point);
+    virtual void makeRightLink(MyDynamicsWorld* world, MyRigidBody* body, const PositionInfo &body_point);
 
 protected:
     real_t _len;
@@ -28,7 +28,7 @@ protected:
     Cube _cube;
 
 protected:
-    void makeLink(MyDiscreteDynamicsWorld *world, const PositionInfo& this_point, MyPhysicsBody *body, const PositionInfo &body_point);
+    void makeLink(MyDynamicsWorld *world, const PositionInfo& this_point, MyRigidBody *body, const PositionInfo &body_point);
 };
 
 #endif // LINKER_H

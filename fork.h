@@ -6,14 +6,14 @@
 #include "utils.h"
 
 class btGeneric6DofSpring2Constraint;
-class MyDiscreteDynamicsWorld;
+class MyDynamicsWorld;
 class btRigidBody;
 
 class Fork
 {
 public:
     Fork(const PositionInfo& origin, real_t mass, real_t travel, real_t len, real_t steer_len, real_t axle);
-    void attach2world(MyDiscreteDynamicsWorld* world);
+    void attach2world(MyDynamicsWorld* world);
 
     //adjusting apis
     void setDamping(real_t val);

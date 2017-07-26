@@ -27,7 +27,7 @@ public:
     }
 
     template<class FrontPart, class RearPart>
-    void setupLinker(MyDiscreteDynamicsWorld *world, FrontPart* f, RearPart* r)
+    void setupLinker(MyDynamicsWorld *world, FrontPart* f, RearPart* r)
     {
         PositionInfo wfpos1 = f->toWorldPosition(_fpos1);
         PositionInfo wrpos1 = r->toWorldPosition(_rpos1);

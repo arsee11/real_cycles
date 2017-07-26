@@ -15,7 +15,7 @@ public:
         ,_wheel(wheel)
     {}
 
-    void setup(MyDiscreteDynamicsWorld* world);
+    void setup(MyDynamicsWorld* world);
 
 private:
     Base* _base=nullptr;
@@ -23,7 +23,7 @@ private:
 };
 
 template<class Base,  class Wheel>
-void WheelAdapter<Base, Wheel>::setup(MyDiscreteDynamicsWorld *world){
+void WheelAdapter<Base, Wheel>::setup(MyDynamicsWorld *world){
     assert(_wheel);
     assert(_base);
     PositionInfo wbpos = _base->getWheelSetupWorldPosition();
@@ -42,7 +42,7 @@ void WheelAdapter<Base, Wheel>::setup(MyDiscreteDynamicsWorld *world){
     btHingeConstraint*  hinge = new btHingeConstraint(*(_wheel->physics_body()), *(_base->wheel_setup_body())
                                                       , localA, localB);
 
-    hinge->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+    hinge->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
     hinge->enableAngularMotor(true, -2, 20);
     world->theWorld()->addConstraint(hinge);
 

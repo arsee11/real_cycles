@@ -33,7 +33,7 @@ public:
     }
 
     template<class FrontPart, class RearPart>
-    void setupShox(MyDiscreteDynamicsWorld *world, FrontPart* f, RearPart* r)
+    void setupShox(MyDynamicsWorld *world, FrontPart* f, RearPart* r)
     {
         real_t slen = _shox->length();
         real_t x=_wfpos.x - (slen/2)*cos(_shox_roll);
@@ -79,7 +79,7 @@ private:
     std::auto_ptr<FrontPoint> _fpoint;
     std::auto_ptr<RearPoint> _rpoint;
     std::auto_ptr<Shox> _shox;
-    real_t _shox_roll = torads(25);
+    real_t _shox_roll = torads(15);
 };
 
 #endif // NORMALSHOXSETUP_H

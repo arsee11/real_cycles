@@ -18,7 +18,7 @@ public:
     {
     }
 
-    void setup(MyDiscreteDynamicsWorld* world)
+    void setup(MyDynamicsWorld* world)
     {
         PositionInfo frpos = _frame->getForkSetupLocalPosition();
         PositionInfo wfrpos = _frame->getForkSetupWorldPosition();
@@ -60,7 +60,7 @@ public:
                                                            , localA, localB);
          world->theWorld()->addConstraint(hinge, true);
         */
-         constraint->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+         constraint->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
          world->theWorld()->addConstraint(constraint, true);
 
          real_t htl = _frame->HTL();
@@ -73,7 +73,7 @@ public:
          constraint =  new btGeneric6DofConstraint(
                      *(_frame->front_body()), *(_fork->upper_body()), localA, localB, true);
 
-        constraint->setOverrideNumSolverIterations(PhysicsConfiger::OverrideNumSolverIterations);
+        constraint->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
         world->theWorld()->addConstraint(constraint, true);
     }
 

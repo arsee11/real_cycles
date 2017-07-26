@@ -15,9 +15,9 @@ public:
                 );
 
 private:
-    MyPhysicsBody* _left=nullptr;
-    MyPhysicsBody* _right=nullptr;
-    MyPhysicsBody* _center=nullptr;
+    MyRigidBody* _left=nullptr;
+    MyRigidBody* _right=nullptr;
+    MyRigidBody* _center=nullptr;
 
     void calcCube();
 };
