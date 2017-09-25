@@ -1,7 +1,7 @@
 #ifndef TWOLINKERSETUP_H
 #define TWOLINKERSETUP_H
 
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "utils.h"
 #include <memory>
 

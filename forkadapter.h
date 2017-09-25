@@ -3,7 +3,7 @@
 
 #include "utils.h"
 #include <btBulletDynamicsCommon.h>
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "configer.h"
 
 class DiscreteDynamicsWorld;

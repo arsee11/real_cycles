@@ -1,6 +1,6 @@
 #include "mybox.h"
 #include "mycylinder.h"
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "shox.h"
 #include "configer.h"
 

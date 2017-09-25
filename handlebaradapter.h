@@ -1,7 +1,7 @@
 #ifndef HANDLERBARADAPTER_H
 #define HANDLERBARADAPTER_H
 
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "configer.h"
 
 

@@ -1,7 +1,7 @@
 #ifndef MYCOMPOUNDBODY_H
 #define MYCOMPOUNDBODY_H
 
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "myrigidbody.h"
 #include <vector>
 

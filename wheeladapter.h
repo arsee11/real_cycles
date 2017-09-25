@@ -1,7 +1,7 @@
 #ifndef WHEELADAPTER_H
 #define WHEELADAPTER_H
 
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "utils.h"
 #include <assert.h>
 #include "configer.h"

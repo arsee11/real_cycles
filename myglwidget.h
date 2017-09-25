@@ -1,7 +1,7 @@
 #ifndef MYGLWIDGET_H
 #define MYGLWIDGET_H
 
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include <functional>
 
 #include <QOpenGLWidget>

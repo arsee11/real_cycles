@@ -2,7 +2,7 @@
 #define NORMALSHOXSETUP_H
 
 #include "mybox.h"
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 
 #include <memory>
 

@@ -26,11 +26,14 @@
 #include "wheel.h"
 #include "wheeladapter.h"
 #include "pumptrack.h"
+#include "controller.h"
 #include <GL/glu.h>
 #include <QOpenGLFunctions>
 #include <QTimer>
 #include <QDebug>
+#include <functional>
 
+using namespace std::placeholders;
 
 void MyGLWidget::onWorldStateChanged(const bodies_state_t& states)
 {
@@ -46,8 +49,10 @@ void MyGLWidget::onTimeout()
 
 void MyGLWidget::initializeGL()
 {
-    _world = new MyDynamicsWorld(std::bind(&MyGLWidget::onWorldStateChanged, this, std::placeholders::_1));
+    Controller* ctrl = new Controller;
 
+    _world = new MyDynamicsWorld(std::bind(&MyGLWidget::onWorldStateChanged, this, std::placeholders::_1));
+    _world->setPreStepDelegate( std::bind( &Controller::peekDynamicsWorld, ctrl, _1, _2) );
     _world->setGravity(0.f, PhysicsConfiger::Gravity, 0.f);
     PumpTrack* g = new PumpTrack(PositionInfo(0, -90, 0));
     //g->color(MyBox::UP, Color(0,200,0));
@@ -82,6 +87,7 @@ void MyGLWidget::initializeGL()
     Handlebar* bar = new Handlebar(PositionInfo(0,0, -40), 0.3f,  76.0f, 3.18f, 2.f, 5.f, 8.f);
     bar->attach2World(_world);
     //bar->physics_body()->setAngularVelocity(btVector3(0, 5, 0));
+    ctrl->watch_body = bar;
 
     Stem* stem = new Stem(PositionInfo(0,0, -40, torads(-90)), 0.2f, 6.f, 15.f);
     stem->attach2World(_world);
@@ -103,45 +109,6 @@ void MyGLWidget::initializeGL()
 
     WheelAdapter<Fork, Wheel> fwa(fork, front_wheel);
     fwa.setup(_world);
-
-/*
-    MyBox* box1 = new MyBox(10, 5, 5, PositionInfo(0,-20,0), 1);
-    box1->color(255, 0, 0);
-    box1->attach2World(_world);
-
-    MyBox* box2 = new MyBox(20, 5, 5, PositionInfo(7.5, -20,0, torads(90)), 2);
-    box2->color(0, 255, 0);
-    box2->attach2World(_world);
-
-    btTransform localA, localB;
-     localA.setIdentity();
-     localA.setOrigin( btVector3(5,  0, 0) );
-     localA.setRotation(btQuaternion(0, 0, 0));
-     localB.setIdentity();
-     localB.setOrigin(btVector3(0,  0, -2.5));
-     localB.setRotation(btQuaternion(torads(-90),  0, 0));
-    btFixedConstraint* c = new btFixedConstraint( *(box1->physics_body()), *(box2->physics_body()), localA, localB);
-    _world->theWorld()->addConstraint(c, true);
-*/
-
-    /*
-    MyBox* box1 = new MyBox(3, 2, 40, PositionInfo(0,0,-22), 3);
-    box1->color(255, 0, 0);
-    box1->attach2World(_world);
-    box1->physics_body()->setAngularVelocity(btVector3(0,0, 5));
-
-    MyCylinder* c1 = new MyCylinder(10, 2, 10, PositionInfo(0,0,-20),1, MyCylinder::AroundType::Z);
-    c1->attach2World(_world);
-    c1->color(0, 255,0);
-
-    btVector3 axisA(0.f, 0.f, 1.f);
-    btVector3 axisB(0.f, 0.f, 1.f);
-    btVector3 pivotA(0, 0.f, 1.f);
-    btVector3 pivotB( 0.f, 0.f, -1.f);
-   btHingeConstraint*  spHingeDynAB = new btHingeConstraint(*(box1->physics_body()), *(c1->physics_body()), pivotA, pivotB, axisA, axisB);
-   _world->theWorld()->addConstraint(spHingeDynAB);
-    //spHingeDynAB->setLimit(-SIMD_HALF_PI * 0.5f, SIMD_HALF_PI * 0.5f);
-    */
 
     _timer = new QTimer(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(onTimeout()));

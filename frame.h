@@ -3,7 +3,7 @@
 
 #include "framefrontpart.h"
 #include "framesteadyrearpart.h"
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "utils.h"
 
 struct NullShoxAdapter

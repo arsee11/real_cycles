@@ -1,5 +1,5 @@
 #include "mybox.h"
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "myglwidget.h"
 #include "myground.h"
 #include <QApplication>

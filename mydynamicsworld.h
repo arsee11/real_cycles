@@ -1,5 +1,5 @@
-#ifndef MYDISCRETEDYNAMICSWORLD_H
-#define MYDISCRETEDYNAMICSWORLD_H
+#ifndef MYDYNAMICSWORLD_H
+#define MYDYNAMICSWORLD_H
 
 #include <btBulletDynamicsCommon.h>
 #include <functional>
@@ -80,4 +80,4 @@ private:
     PreStepDelegate _prestep_delegate=nullptr;
 };
 
-#endif // MYDISCRETEDYNAMICSWORLD_H
+#endif // MYDYNAMICSWORLD_H

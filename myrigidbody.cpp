@@ -1,5 +1,5 @@
 #include "myrigidbody.h"
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 
 uint MyRigidBody::id_counter=0;
 

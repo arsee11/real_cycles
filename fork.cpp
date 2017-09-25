@@ -37,7 +37,7 @@ Fork::Fork(const PositionInfo &origin, real_t mass, real_t travel, real_t len, r
     _constraint->setLimit(5, 0, 0);
     _constraint->enableSpring(1, true);
     _constraint->setStiffness(1, 100.f);
-    _constraint->setDamping(1, 40.f);
+    _constraint->setDamping(1, 20.f);
 }
 
 void Fork::attach2world(MyDynamicsWorld *world)

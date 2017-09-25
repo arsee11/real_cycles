@@ -1,5 +1,5 @@
 #include "mycylinder.h"
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <QDebug>

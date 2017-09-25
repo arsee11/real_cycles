@@ -1,5 +1,5 @@
 #include "pumptrack.h"
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include <BulletCollision/CollisionShapes/btConcaveShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleCallback.h>
 #include <QGL>

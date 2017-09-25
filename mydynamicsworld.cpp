@@ -1,4 +1,4 @@
-#include "mydiscretedynamicsworld.h"
+#include "mydynamicsworld.h"
 #include "myrigidbody.h"
 #include <exception>
 #include <QDebug>
@@ -52,8 +52,8 @@ void MyDynamicsWorld::doSimulation(real_t framerate)
         real_t ay = trans.getRotation().getAxis().getY();
         real_t az = trans.getRotation().getAxis().getZ();
         real_t ag = trans.getRotation().getAngle();
-       qDebug()<<"world pos object =         "<<j <<"(x,y,z):"<<real_t(trans.getOrigin().getX())<<","<<real_t(trans.getOrigin().getY())<<","<<real_t(trans.getOrigin().getZ());
-        qDebug()<<"world rotation object = "<<j <<"(x,y,z,angle):"<<ax<<","<<ay<<"," <<az<<","<<ag;
+       //qDebug()<<"world pos object =         "<<j <<"(x,y,z):"<<real_t(trans.getOrigin().getX())<<","<<real_t(trans.getOrigin().getY())<<","<<real_t(trans.getOrigin().getZ());
+       // qDebug()<<"world rotation object = "<<j <<"(x,y,z,angle):"<<ax<<","<<ay<<"," <<az<<","<<ag;
 
         void* ptr = body->getUserPointer();
         BodyTransInfo pos= { static_cast<MyRigidBody*>(body->getUserPointer())
