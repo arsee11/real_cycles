@@ -27,12 +27,22 @@ public:
 
     PositionInfo origin()const{ return _origin;  }
 
+    BodyTransInfo getMotionPosition();
+
+    void applyForce(const Vex& val, const Vex& pos);
+    void applyTorque(const Vex &val);
+
+    Vex getAngularVelocity()const;
+
+    void setFriction(real_t val);
+    void setRestitution(real_t val);
+
     virtual void color(int r, int g, int b){ _color.r = r; _color.g = g; _color.b = b; }
     int id(){ return _id;}
     btRigidBody* physics_body(){ return _body; }
     void* getRawBody(){ return _body; }
     btCollisionShape* shape(){ return _shape; }
-    virtual const Cube& cube()const{ return Cube(); }
+    virtual Cube cube()const{ return Cube(); }
 
     PositionInfo toWorldPosition(const PositionInfo& origin) const;
     PositionInfo toLocalPosition(const PositionInfo& origin) const;

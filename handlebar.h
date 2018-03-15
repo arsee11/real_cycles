@@ -1,7 +1,8 @@
-#ifndef HANDLEBAR_H
+﻿#ifndef HANDLEBAR_H
 #define HANDLEBAR_H
 
 #include "mycompoundbody.h"
+#include <tuple>>
 
 class MyCylinder;
 
@@ -14,6 +15,7 @@ public:
     PositionInfo getCenterLocalPosition()const;
     void moveTo(const PositionInfo& pos){ this->origin(pos); }
     real_t raise(){ return _raise;}
+    std::tuple<Vex, Vex> getControlPoint();
 
 private:
     MyCylinder* _bar_center=nullptr;

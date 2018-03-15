@@ -42,7 +42,7 @@ public:
     );
 
     void create(){ this->createSelf();}
-    const Cube& cube()const override{ return Cube(_rectangle_l, _axis, _rectangle_w); }
+    Cube cube()const override{ return Cube(_rectangle_l, _axis, _rectangle_w); }
 
     PositionInfo setupLinkPoint(real_t x, real_t y, PointBase base);
 

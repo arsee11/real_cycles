@@ -45,7 +45,7 @@ public:
 
         real_t rw1 = r->tyre_width();
         PositionInfo o(x, y, z, 0.f, 0.f, roll);
-        _l1 = std::auto_ptr<Linker1>(new Linker1(o, 0.1f, _len1, rw1, fw1));
+        _l1 = std::unique_ptr<Linker1>(new Linker1(o, 0.1f, _len1, rw1, fw1));
         _l1->makeLeftLink(world, r, _rpos1);
         _l1->makeRightLink(world, f, _fpos1);
         _l1->attach2World(world);
@@ -62,7 +62,7 @@ public:
 
         real_t rw2 = r->tyre_width();
         o = PositionInfo(x, y, z, 0.f, 0.f, -roll);
-        _l2 = std::auto_ptr<Linker2>(new Linker2(o, 0.1f, _len2, rw2, fw2));
+        _l2 = std::unique_ptr<Linker2>(new Linker2(o, 0.1f, _len2, rw2, fw2));
         _l2->makeLeftLink(world, r, _rpos2);
         _l2->makeRightLink(world, f, _fpos2);
         _l2->attach2World(world);
@@ -76,8 +76,8 @@ private:
     PositionInfo _fpos2 ;
     PositionInfo _rpos1;
     PositionInfo _rpos2 ;
-    std::auto_ptr<Linker1> _l1;
-    std::auto_ptr<Linker2> _l2;
+    std::unique_ptr<Linker1> _l1;
+    std::unique_ptr<Linker2> _l2;
 };
 
 #endif // TWOLINKERSETUP_H

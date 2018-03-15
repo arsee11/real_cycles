@@ -1,4 +1,4 @@
-#ifndef PEDAL_H
+﻿#ifndef PEDAL_H
 #define PEDAL_H
 
 #include "mycompoundbody.h"
@@ -8,7 +8,7 @@
 class Pedal : public MyCompoundBody
 {
 public:
-    Pedal(real_t mass);
+    Pedal(const PositionInfo& origin, real_t mass);
 
 };
 

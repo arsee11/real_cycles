@@ -1,10 +1,10 @@
-#ifndef CONFIGER_H
+﻿#ifndef CONFIGER_H
 #define CONFIGER_H
 
 
 struct PhysicsConfiger{
     const static int NumSolverIterations = 100;
-    static constexpr real_t Gravity = -9.8;
+    static constexpr real_t Gravity = 0;
 };
 
 #endif // CONFIGER_H

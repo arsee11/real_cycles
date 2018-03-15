@@ -22,7 +22,10 @@ struct NullLinkerAdapter
     void remove(){}
 };
 
-template<class FrontPart, class RearPart, class LinkerAdapter=NullLinkerAdapter, class ShoxAdapter=NullShoxAdapter>
+template<class FrontPart, class RearPart
+         ,class LinkerAdapter=NullLinkerAdapter
+         ,class ShoxAdapter=NullShoxAdapter
+>
 class Frame
 {
 public:
@@ -30,6 +33,8 @@ public:
     typedef typename RearPart::Param rear_param_t;
 
 public:
+    Frame(){}
+
     Frame(const PositionInfo& origin, real_t WB, real_t CSL)
         :_origin(origin)
         ,_WB(WB)

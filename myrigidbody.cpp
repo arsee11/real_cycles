@@ -19,6 +19,63 @@ void MyRigidBody::origin(const PositionInfo &origin)
         _body->setMotionState(m);
 }
 
+BodyTransInfo MyRigidBody::getMotionPosition()
+{
+    btTransform trans;
+    if (_body->getMotionState())
+        _body->getMotionState()->getWorldTransform(trans);
+
+
+    real_t ax = trans.getRotation().getAxis().getX();
+    real_t ay = trans.getRotation().getAxis().getY();
+    real_t az = trans.getRotation().getAxis().getZ();
+    real_t ag = trans.getRotation().getAngle();
+
+    return BodyTransInfo { this
+            , trans.getOrigin().getX()
+            , trans.getOrigin().getY()
+            , trans.getOrigin().getZ()
+            , ax ,ay ,az,ag};
+}
+
+void MyRigidBody::applyTorque(const Vex& val)
+{
+    if(_body != nullptr)
+        _body->applyTorque( btVector3(val.x, val.y, val.z));
+}
+
+Vex MyRigidBody::getAngularVelocity() const
+{
+    Vex v;
+    if(_body != nullptr)
+    {
+       const btVector3& v3 = _body->getAngularVelocity();
+        v.x = v3.x();
+        v.y = v3.y();
+        v.z = v3.z();
+    }
+
+    return v;
+}
+
+void MyRigidBody::applyForce(const Vex& val, const Vex& pos)
+{
+    if(_body != nullptr)
+        _body->applyForce(btVector3(val.x, val.y, val.z), btVector3(pos.x, pos.y, pos.z));
+}
+
+void MyRigidBody::setFriction(real_t val)
+{
+    if(_body != nullptr)
+        _body->setFriction(val);
+}
+
+void MyRigidBody::setRestitution(real_t val)
+{
+    if(_body != nullptr)
+        _body->setRestitution(val);
+}
+
 PositionInfo MyRigidBody::toWorldPosition(const PositionInfo &origin) const{
     PositionInfo thiso = this->origin();
     real_t len = origin.y;

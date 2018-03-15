@@ -13,10 +13,10 @@ class NormalShoxAdapter
 {
 public:
     NormalShoxAdapter(Shox* shox)
-        :_shox(std::auto_ptr<Shox>(shox))
+        :_shox(std::unique_ptr<Shox>(shox))
     {
-        _fpoint = std::auto_ptr<FrontPoint>(new FrontPoint());
-        _rpoint = std::auto_ptr<RearPoint>(new RearPoint());
+        _fpoint = std::unique_ptr<FrontPoint>(new FrontPoint());
+        _rpoint = std::unique_ptr<RearPoint>(new RearPoint());
     }
 
     template<class FrontPart, class RearPart>
@@ -76,9 +76,9 @@ private:
 private:
     PositionInfo _rpos;
     PositionInfo _wfpos;
-    std::auto_ptr<FrontPoint> _fpoint;
-    std::auto_ptr<RearPoint> _rpoint;
-    std::auto_ptr<Shox> _shox;
+    std::unique_ptr<FrontPoint> _fpoint;
+    std::unique_ptr<RearPoint> _rpoint;
+    std::unique_ptr<Shox> _shox;
     real_t _shox_roll = torads(15);
 };
 

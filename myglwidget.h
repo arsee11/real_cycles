@@ -1,21 +1,25 @@
 #ifndef MYGLWIDGET_H
 #define MYGLWIDGET_H
 
-#include "mydynamicsworld.h"
+#include "cyclessimulator.h"
 #include <functional>
 
 #include <QOpenGLWidget>
+#include <QTimer>
+
 
 
 class MyGLWidget : public QOpenGLWidget
 {
     Q_OBJECT
+
 public:
     MyGLWidget(){
         this->showMaximized();
     }
 
-    void onWorldStateChanged(const bodies_state_t &states);
+    ~MyGLWidget(){}
+
 signals:
 
 public slots:
@@ -28,10 +32,15 @@ protected:
     void paintGL();
 
     QTimer* _timer;
-    MyDynamicsWorld* _world=nullptr;
+
 
     bodies_state_t _bodies_state;
-    void createFork();
+    CyclesSimulator _simulator;
+
+    // QWidget interface
+protected:
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 };
 
 #endif // MYGLWIDGET_H

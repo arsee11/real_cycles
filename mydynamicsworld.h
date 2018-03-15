@@ -1,4 +1,4 @@
-#ifndef MYDYNAMICSWORLD_H
+﻿#ifndef MYDYNAMICSWORLD_H
 #define MYDYNAMICSWORLD_H
 
 #include <btBulletDynamicsCommon.h>
@@ -50,6 +50,8 @@ public:
 
     void setPreStepDelegate(PreStepDelegate delegate){ _prestep_delegate = delegate; }
     void setGravity(real_t x, real_t y, real_t z){ _the_world->setGravity(btVector3(x, y, z)); }
+    void applyGravity(){ _the_world->applyGravity(); }
+    void clearForces(){_the_world->clearForces();}
     //void addCollisionShape( btCollisionShape* shape){ _collision_shapes.push_back(shape);}
     void doSimulation(real_t framerate);
     void stopSimulation();

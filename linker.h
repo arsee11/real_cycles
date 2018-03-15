@@ -15,7 +15,7 @@ public:
            ,real_t right_width
     );
 
-    const Cube& cube()const override{ return _cube;}
+    Cube cube()const override{ return _cube;}
 
     virtual void makeLeftLink(MyDynamicsWorld* world, MyRigidBody* body, const PositionInfo&body_point);
     virtual void makeRightLink(MyDynamicsWorld* world, MyRigidBody* body, const PositionInfo &body_point);

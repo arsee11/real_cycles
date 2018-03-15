@@ -1,4 +1,4 @@
-#ifndef FORKADAPTER_H
+﻿#ifndef FORKADAPTER_H
 #define FORKADAPTER_H
 
 #include "utils.h"
@@ -74,6 +74,8 @@ public:
                      *(_frame->front_body()), *(_fork->upper_body()), localA, localB, true);
 
         constraint->setOverrideNumSolverIterations(PhysicsConfiger::NumSolverIterations);
+        constraint->setAngularLowerLimit(btVector3(0,0,0));
+        constraint->setAngularUpperLimit(btVector3(0,0,0));
         world->theWorld()->addConstraint(constraint, true);
     }
 

@@ -28,7 +28,7 @@ public:
 
     void color(int r, int g, int b)override;
     void color(Face face,  const Color& c){ _cube.color(face, c); }
-    const Cube &cube() const override{ return Cube(_len, _width, _height);}
+    Cube cube() const override{ return Cube(_len, _width, _height);}
 
 
 private:

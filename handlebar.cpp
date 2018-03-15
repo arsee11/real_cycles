@@ -1,4 +1,4 @@
-#include "handlebar.h"
+﻿#include "handlebar.h"
 #include "mycylinder.h"
 
 Handlebar::Handlebar(const PositionInfo& pos, real_t mass, real_t len, real_t clamp, real_t raise, real_t back_sweep, real_t up_sweep)
@@ -23,6 +23,13 @@ PositionInfo Handlebar::getCenterLocalPosition() const
     co.pitch = o.pitch;
     co.roll = o.roll;
     return co;
+}
+
+std::tuple<Vex, Vex> Handlebar::getControlPoint()
+{
+    Vex left(0,0, -_len/2.f);
+    Vex right(0,0, _len/2.f);
+    return std::make_tuple(left, right);
 }
 
 void Handlebar::createBarCenter(real_t mass, real_t back_sweep, real_t up_sweep)
