@@ -1,80 +1,37 @@
-#include "mytubebody.h"
-#include "cylinder.h"
-#include "ring.h"
-#include "mydiscretedynamicsworld.h"
-#include "myconvexhullbody.h"
-
-#include <GL/gl.h>
+﻿#include "myconvexhullbody.h"
+#include <mydynamicsworld.h>
+#include <QDebug>
 #include <memory>
-#include <tuple>
+#include <GL/gl.h>
 #include <BulletCollision/CollisionShapes/btConvexPolyhedron.h>
 #include <BulletCollision/CollisionShapes/btShapeHull.h>
 
-MyTubeBody::MyTubeBody(real_t out_radius_top, real_t in_radius_top
-                       , real_t out_radius_bottom, real_t in_radius_bottom
-                       , real_t len, const PositionInfo &origin, real_t mass)
-    :MyCompoundBody(origin, mass)
-    ,_outr_t(out_radius_top),_inr_t(in_radius_top)
-    ,_outr_b(out_radius_bottom),_inr_b(in_radius_bottom)
-    ,_len(len)
+MyConvexHullBody::MyConvexHullBody(const PositionInfo &origin, real_t mass, const Vex vexs[], int size_vexs)
+    :MyRigidBody(origin)
 {
-    int slices = 60;
-    real_t a = 2*MY_PI / slices;
-    Vex  slicev[8];
-    Vex v1;
-    v1.x = _inr_b * sin( a/2 );
-    v1.y = - _len/2;
-    v1.z = (_outr_b - _inr_b)/2;
-    Vex v2( -v1.x, v1.y, v1.z);
-    slicev[0] = v1;
-    slicev[1] = v2;
-
-    Vex v3;
-    v3.x = _outr_b * sin( a/2 );
-    v3.y = - _len/2;
-    v3.z = -(_outr_b - _inr_b)/2;
-    Vex v4( -v3.x, v3.y, v3.z);
-    slicev[2] = v3;
-    slicev[3] = v4;
-
-    Vex v5;
-    v5.x = _inr_t * sin( a/2 );
-    v5.y = _len/2;
-    v5.z = (_outr_t - _inr_t)/2;
-    Vex v6( -v5.x, v5.y, v5.z);
-    slicev[4] = v5;
-    slicev[5] = v6;
-
-    Vex v7;
-    v7.x = _outr_t * sin( a/2 );
-    v7.y =  _len/2;
-    v7.z = -(_outr_b - _inr_b)/2;
-    Vex v8( -v7.x, v7.y, v7.z);
-    slicev[6] = v7;
-    slicev[7] = v8;
-
-    Vex vs[36];
-    for (int i=0;i<36;i+=3)
+    btConvexHullShape *shape = new btConvexHullShape();
+     for(int i=0; i<size_vexs; i++)
     {
-       vs[i] = slicev[ BOX_INDICES[i]];
+        const Vex& v = vexs[i];
+       shape->addPoint(btVector3(v.x, v.y, v.z));
     }
-    for(int i=0; i<slices; i++)
-    {
-        MyConvexHullBody *h = new MyConvexHullBody(vs, 36);
-        real_t x = (_inr_b+(_outr_b-_inr_b)/2.f) * cos( 2*MY_PI/slices * i);
-        real_t y = 0.f;
-        real_t z = (_inr_b+(_outr_b-_inr_b)/2.f) * sin( 2*MY_PI/slices * i);
-        real_t yaw = MY_PI/2.f - 2*MY_PI/slices * i;
-        addBody(h, origin, mass/slices);
-    }
+
+    shape->initializePolyhedralFeatures();
+    this->createPhysicsBody(shape, mass);
 }
 
-int MyTubeBody::buildVertexs(Vex** vexs)
+MyConvexHullBody::MyConvexHullBody(const Vex vexs[], int size_vexs)
 {
-
+    btConvexHullShape *shape = new btConvexHullShape();
+    for(int i=0; i<size_vexs; i++)
+    {
+        const Vex& v = vexs[i];
+        shape->addPoint(btVector3(v.x, v.y, v.z));
+    }
+    _shape = shape;
 }
 
-void MyTubeBody::render(const BodyTransInfo &info)
+void MyConvexHullBody::render(const BodyTransInfo &info)
 {
     glColor3f(_color.r/255.f, _color.g/255.f, _color.b/255.f);
     glPushMatrix();
@@ -82,15 +39,6 @@ void MyTubeBody::render(const BodyTransInfo &info)
     glTranslatef(info.x/FACTOR, info.y/FACTOR, info.z/FACTOR);
     glRotatef(info.degrees(), info.axis_x, info.axis_y, info.axis_z);
 
-    /*RingY r_top(_outr_t/FACTOR, _inr_t/FACTOR,_len/2.f/FACTOR);
-    CylinderY c_out(_outr_t/FACTOR, _outr_b/FACTOR, _len/FACTOR);
-    CylinderY c_in(_inr_t/FACTOR, _inr_b/FACTOR, _len/FACTOR);
-    RingY r_bottom(_outr_b/FACTOR, _inr_b/FACTOR,-_len/2.f/FACTOR);
-    r_top.draw();
-    c_out.draw();
-    c_in.draw();
-    r_bottom.draw();
-    */
     if (_shape->isConvex())
     {
         const btConvexPolyhedron *poly = _shape->isPolyhedral() ? ((btPolyhedralConvexShape*) _shape)->getConvexPolyhedron() : 0;
@@ -122,7 +70,6 @@ void MyTubeBody::render(const BodyTransInfo &info)
             glEnd ();
         } else
         {
-            float red=0.1;
             std::auto_ptr<btShapeHull> hull( new btShapeHull( (btConvexShape*)_shape) );
             hull->buildHull(_shape->getMargin());
             if (hull->numTriangles () > 0)
@@ -155,21 +102,15 @@ void MyTubeBody::render(const BodyTransInfo &info)
                     btVector3 normal = (v3-v1).cross(v2-v1);
                     normal.normalize ();
                     glNormal3f(normal.getX(),normal.getY(),normal.getZ());
-                   // glVertex3f (v1.x(), v1.y(), v1.z());
-                    //glVertex3f (v2.x(), v2.y(), v2.z());
-                   // glVertex3f (v3.x(), v3.y(), v3.z());
-                    red += 0.05;
-                    glColor3f(red, 0,0);
-                    glVertex3f (v1.x()/FACTOR, v1.y()/FACTOR, v1.z()/FACTOR);
-                    glVertex3f (v2.x()/FACTOR, v2.y()/FACTOR, v2.z()/FACTOR);
-                    glVertex3f (v3.x()/FACTOR, v3.y()/FACTOR, v3.z()/FACTOR);
+                    glVertex3f (v1.x(), v1.y(), v1.z());
+                    glVertex3f (v2.x(), v2.y(), v2.z());
+                    glVertex3f (v3.x(), v3.y(), v3.z());
 
                 }
                 glEnd ();
 
             }
         }
-
     }
 
     glPopMatrix();

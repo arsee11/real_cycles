@@ -1,4 +1,4 @@
-#ifndef CUBE_H
+﻿#ifndef CUBE_H
 #define CUBE_H
 
 #include "utils.h"

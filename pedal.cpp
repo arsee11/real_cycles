@@ -1,10 +1,14 @@
-﻿#include "mybox.h"
-#include "mycylinder.h"
+﻿#include <mybox.h>
+#include <mycylinder.h>
 #include "pedal.h"
 
 Pedal::Pedal(const PositionInfo& origin, real_t mass)
     :MyCompoundBody(origin, mass)
 {
+    //L pedal plane length,
+    //W padel width,
+    //H padel height,
+    //l padel steam legth.
     real_t L= 10.f, W=10.f, H=2.f, l=2.f;
     real_t x=0.f, y=0.f, z=0.f;
 

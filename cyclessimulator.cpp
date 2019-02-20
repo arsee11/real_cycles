@@ -36,12 +36,12 @@ void CyclesSimulator::init()
     _world->setPreStepDelegate( std::bind( &CyclesSimulator::peekDynamicsWorld, this, _1, _2) );
     _world->setGravity(0.f, PhysicsConfiger::Gravity, 0.f);
 
-    //Crankset* cs = new Crankset(17, 8.3, 32, 0.8, PositionInfo(0,0,-10));
+    Crankset* cs = new Crankset(17, 8.3, 32, 0.8, PositionInfo(0,0,-10));
     //cs->physics_body()->setAngularVelocity(btVector3(2, 0, 0));
-    //cs->attach2World(_world);
+    cs->attach2World(_world);
 
     Pedal* p = new Pedal(PositionInfo(0,0, -10), 0.350);
-    p->physics_body()->setAngularVelocity(btVector3(2, 0, 0));
+    //p->physics_body()->setAngularVelocity(btVector3(2, 0, 0));
     p->attach2World(_world);
 }
 

@@ -1,7 +1,7 @@
 ﻿#include "mybox.h"
 #include "mydynamicsworld.h"
 #include "myglwidget.h"
-#include "myground.h"
+#include <myground.h>
 #include <QApplication>
 #include <QDebug>
 

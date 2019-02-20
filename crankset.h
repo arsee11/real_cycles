@@ -13,6 +13,7 @@ public:
              ,const PositionInfo& origin=PositionInfo(0,0,0)
     );
 
+
 private:
     void createChainRing(real_t teeth, real_t mass);
     void createLeg(real_t length, real_t mass);
